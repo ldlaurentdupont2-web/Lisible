@@ -579,7 +579,7 @@ export default function Home() {
                 <div className="flex gap-2">
                   <input type="text" value={accessCode}
                     onChange={(e) => { setAccessCode(e.target.value.toUpperCase()); setAccessCodeError(''); setIsFreeAccess(false) }}
-                    placeholder="ADMIN, TEST, INVITE…"
+                    placeholder="Entrez votre code"
                     className="flex-1 px-4 py-2.5 bg-beige border-2 border-border-soft rounded-xl text-sm font-mono uppercase focus:outline-none focus:border-terracotta transition-colors"
                     maxLength={20} />
                   <button onClick={handleApplyAccessCode} className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors">
