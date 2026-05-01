@@ -16,7 +16,7 @@ export const config = {
 
 async function extractTextFromPdf(base64Data) {
   try {
- const pdfParse = (await import('pdf-parse')).default
+    const pdfParse = (await import('pdf-parse')).default
     const buffer = Buffer.from(base64Data, 'base64')
     const data = await pdfParse(buffer)
     return data.text
@@ -35,6 +35,8 @@ export default async function handler(req, res) {
     category,
     documentText,
     pdfBase64,
+    imageBase64,
+    imageMediaType,
     question,
     accessCode,
     paymentVerified,
@@ -43,12 +45,10 @@ export default async function handler(req, res) {
     followUpQuestion,
   } = req.body
 
-  // Validate category
   if (!CATEGORIES[category]) {
     return res.status(400).json({ error: 'Catégorie invalide.' })
   }
 
-  // Access control
   const isFreeCode = accessCode && FREE_CODES.includes(accessCode.toUpperCase().trim())
   const isPaid = paymentVerified === true
 
@@ -56,7 +56,6 @@ export default async function handler(req, res) {
     return res.status(402).json({ error: 'Paiement requis.' })
   }
 
-  // Build messages
   let messages = []
 
   if (isFollowUp && previousAnalysis) {
@@ -66,8 +65,33 @@ export default async function handler(req, res) {
         content: `Voici l'analyse que tu as fournie précédemment :\n\n${previousAnalysis}\n\nQuestion de suivi de l'utilisateur : ${followUpQuestion}`,
       },
     ]
+  } else if (imageBase64 && imageMediaType) {
+    // Image mode — send directly to Claude vision
+    const questionText = question && question.trim()
+      ? `\n\nQuestion spécifique de l'utilisateur : ${question.trim()}`
+      : ''
+
+    messages = [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: imageMediaType,
+              data: imageBase64,
+            },
+          },
+          {
+            type: 'text',
+            text: `Voici le document à analyser (image).${questionText}`,
+          },
+        ],
+      },
+    ]
   } else {
-    // Extract text from PDF if provided
+    // Text or PDF mode
     let finalText = documentText || ''
 
     if (pdfBase64) {
@@ -103,19 +127,11 @@ export default async function handler(req, res) {
       .map((block) => block.text)
       .join('\n')
 
-    return res.status(200).json({
-      analysis: responseText,
-      category,
-      tokens: message.usage,
-    })
+    return res.status(200).json({ analysis: responseText, category })
   } catch (error) {
     console.error('Anthropic API error:', error)
-    if (error.status === 401) {
-      return res.status(500).json({ error: 'Clé API invalide. Contactez le support.' })
-    }
-    if (error.status === 429) {
-      return res.status(429).json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' })
-    }
-    return res.status(500).json({ error: "Une erreur est survenue lors de l'analyse. Réessayez." })
+    if (error.status === 401) return res.status(500).json({ error: 'Clé API invalide.' })
+    if (error.status === 429) return res.status(429).json({ error: 'Trop de requêtes. Réessayez.' })
+    return res.status(500).json({ error: "Erreur lors de l'analyse. Réessayez." })
   }
 }
