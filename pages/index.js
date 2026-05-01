@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import Head from 'next/head'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { CATEGORIES, FREE_CODES } from '../lib/prompts'
 
 const IconChevronLeft = () => (
@@ -75,6 +76,7 @@ function AnalysisResult({ text }) {
   return (
     <div className="markdown-body">
       <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
             <h1 className="text-xl font-bold text-text-primary mt-6 mb-3 first:mt-0">{children}</h1>
