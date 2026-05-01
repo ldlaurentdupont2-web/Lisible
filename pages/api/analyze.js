@@ -12,6 +12,7 @@ export const config = {
       sizeLimit: '10mb',
     },
   },
+  maxDuration: 60,
 }
 
 async function extractTextFromPdf(base64Data) {
