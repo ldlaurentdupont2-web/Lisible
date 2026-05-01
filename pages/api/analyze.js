@@ -1,6 +1,6 @@
 // pages/api/analyze.js
-const Anthropic = require('@anthropic-ai/sdk')
-const { SYSTEM_PROMPTS, FREE_CODES, CATEGORIES } = require('../../lib/prompts')
+import Anthropic from '@anthropic-ai/sdk'
+import { SYSTEM_PROMPTS, FREE_CODES, CATEGORIES } from '../../lib/prompts'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -15,14 +15,13 @@ export const config = {
 }
 
 async function extractTextFromPdf(base64Data) {
-  const pdfParse = require('pdf-parse')
+  const { default: pdfParse } = await import('pdf-parse/lib/pdf-parse.js')
   const buffer = Buffer.from(base64Data, 'base64')
   const data = await pdfParse(buffer)
   return data.text
 }
 
 export default async function handler(req, res) {
-  // Wrapper global pour éviter toute réponse non-JSON
   try {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' })
@@ -129,7 +128,6 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Handler error:', error)
 
-    // Erreurs Anthropic connues
     if (error.status === 401) {
       return res.status(500).json({ error: 'Clé API invalide.' })
     }
@@ -140,7 +138,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Modèle introuvable. Contactez le support.' })
     }
 
-    // Erreur générique — toujours du JSON
     return res.status(500).json({ error: "Erreur lors de l'analyse. Réessayez." })
   }
 }
