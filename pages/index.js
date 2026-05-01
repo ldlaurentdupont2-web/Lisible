@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import Head from 'next/head'
+import ReactMarkdown from 'react-markdown'
 import { CATEGORIES, FREE_CODES } from '../lib/prompts'
 
 const IconChevronLeft = () => (
@@ -71,53 +72,72 @@ function CategoryCard({ cat, selected, onClick }) {
 
 function AnalysisResult({ text }) {
   if (!text) return null
-  const lines = text.split('\n')
-  const rendered = []
-  let i = 0
-  while (i < lines.length) {
-    const line = lines[i].trim()
-    if (!line) { i++; continue }
-    const emojiMatch = line.match(/^(📄|🎯|⏰|✅|📞|⚠️|ℹ️|🔍|📌|💡|❗|🚨)\s*(.+)/)
-    if (emojiMatch) {
-      rendered.push(
-        <div key={i} className="mt-5 first:mt-0">
-          <h3 className="text-base font-semibold text-terracotta-dark flex items-center gap-2 mb-2">
-            <span className="text-lg">{emojiMatch[1]}</span><span>{emojiMatch[2]}</span>
-          </h3>
-        </div>
-      )
-      i++; continue
-    }
-    if (line.startsWith('**') && line.endsWith('**') && line.length > 4) {
-      rendered.push(<h3 key={i} className="text-sm font-bold text-text-primary mt-4 mb-1">{line.replace(/\*\*/g, '')}</h3>)
-      i++; continue
-    }
-    if (line.startsWith('- ') || line.startsWith('• ') || line.startsWith('* ')) {
-      const items = []
-      while (i < lines.length) {
-        const b = lines[i].trim()
-        if (b.startsWith('- ') || b.startsWith('• ') || b.startsWith('* ')) { items.push(b.replace(/^[-•*]\s+/, '')); i++ }
-        else break
-      }
-      rendered.push(
-        <ul key={`ul-${i}`} className="space-y-1.5 my-2">
-          {items.map((item, idx) => (
-            <li key={idx} className="flex gap-2 text-sm text-text-primary leading-relaxed">
+  return (
+    <div className="markdown-body">
+      <ReactMarkdown
+        components={{
+          h1: ({ children }) => (
+            <h1 className="text-xl font-bold text-text-primary mt-6 mb-3 first:mt-0">{children}</h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-base font-bold text-terracotta-dark mt-6 mb-2 first:mt-0 flex items-center gap-2">{children}</h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-sm font-bold text-text-primary mt-4 mb-1.5">{children}</h3>
+          ),
+          p: ({ children }) => (
+            <p className="text-sm text-text-primary leading-relaxed my-2">{children}</p>
+          ),
+          ul: ({ children }) => (
+            <ul className="space-y-1.5 my-3 ml-1">{children}</ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="space-y-1.5 my-3 ml-4 list-decimal">{children}</ol>
+          ),
+          li: ({ children }) => (
+            <li className="flex gap-2 text-sm text-text-primary leading-relaxed">
               <span className="text-terracotta mt-1 flex-shrink-0">▸</span>
-              <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
+              <span>{children}</span>
             </li>
-          ))}
-        </ul>
-      )
-      continue
-    }
-    rendered.push(
-      <p key={i} className="text-sm text-text-primary leading-relaxed my-1.5"
-        dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
-    )
-    i++
-  }
-  return <div className="space-y-0.5">{rendered}</div>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-semibold text-text-primary">{children}</strong>
+          ),
+          em: ({ children }) => (
+            <em className="italic text-text-secondary">{children}</em>
+          ),
+          hr: () => (
+            <hr className="border-border-soft my-4" />
+          ),
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-4 border-terracotta/40 pl-4 my-3 text-sm text-text-secondary italic">{children}</blockquote>
+          ),
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-4">
+              <table className="w-full text-sm border-collapse">{children}</table>
+            </div>
+          ),
+          thead: ({ children }) => (
+            <thead className="bg-terracotta/10">{children}</thead>
+          ),
+          th: ({ children }) => (
+            <th className="text-left px-3 py-2 font-semibold text-text-primary border border-border-soft text-xs">{children}</th>
+          ),
+          td: ({ children }) => (
+            <td className="px-3 py-2 text-text-primary border border-border-soft text-xs leading-relaxed">{children}</td>
+          ),
+          tr: ({ children }) => (
+            <tr className="even:bg-stone-50">{children}</tr>
+          ),
+          code: ({ children }) => (
+            <code className="bg-stone-100 px-1.5 py-0.5 rounded text-xs font-mono text-text-primary">{children}</code>
+          ),
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    </div>
+  )
 }
 
 const STEPS = { HOME: 'home', UPLOAD: 'upload', PAYMENT: 'payment', LOADING: 'loading', RESULT: 'result' }
@@ -136,7 +156,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [inputMode, setInputMode] = useState(INPUT_MODES.FILE)
   const [documentText, setDocumentText] = useState('')
-  const [uploadedFile, setUploadedFile] = useState(null) // { name, size, type, base64, fileType }
+  const [uploadedFile, setUploadedFile] = useState(null)
   const [question, setQuestion] = useState('')
   const [accessCode, setAccessCode] = useState('')
   const [accessCodeError, setAccessCodeError] = useState('')
@@ -348,7 +368,6 @@ export default function Home() {
                 <p className="text-sm text-text-secondary">Déposez une photo, un PDF, ou collez le texte de votre document.</p>
               </div>
 
-              {/* Mode selector */}
               <div className="flex gap-2 p-1 bg-border-soft rounded-xl">
                 <button onClick={() => setInputMode(INPUT_MODES.FILE)}
                   className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${inputMode === INPUT_MODES.FILE ? 'bg-white text-terracotta shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}>
@@ -360,7 +379,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Privacy notice */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex gap-2.5">
                 <span className="text-amber-500 text-lg flex-shrink-0">🛡️</span>
                 <p className="text-xs text-amber-700 leading-relaxed">
@@ -368,7 +386,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* File upload */}
               {inputMode === INPUT_MODES.FILE && (
                 <div>
                   {!uploadedFile ? (
@@ -385,7 +402,6 @@ export default function Home() {
                     </div>
                   ) : (
                     <div>
-                      {/* Preview for images */}
                       {uploadedFile.fileType === 'image' && (
                         <div className="mb-3 rounded-xl overflow-hidden border border-border-soft">
                           <img src={`data:${uploadedFile.type};base64,${uploadedFile.base64}`} alt="Aperçu" className="w-full max-h-64 object-contain bg-stone-50" />
@@ -406,7 +422,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Text input */}
               {inputMode === INPUT_MODES.TEXT && (
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-2">
@@ -419,7 +434,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Optional question */}
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-2">
                   Votre question spécifique <span className="text-text-secondary font-normal">(facultatif)</span>
@@ -590,6 +604,8 @@ export default function Home() {
 
       <style jsx global>{`
         @media print { .no-print { display: none !important; } header { display: none !important; } footer { display: none !important; } }
+        .markdown-body ol > li { list-style-type: decimal; margin-left: 1rem; }
+        .markdown-body ol > li::marker { color: #c0714a; font-weight: 600; }
       `}</style>
     </>
   )
