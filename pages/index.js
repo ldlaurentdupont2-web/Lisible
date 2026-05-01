@@ -2,13 +2,7 @@ import { useState, useRef } from 'react'
 import Head from 'next/head'
 import { CATEGORIES, FREE_CODES } from '../lib/prompts'
 
-// ─── Icons (inline SVGs) ──────────────────────────────────────────────────────
-
-const IconUpload = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-  </svg>
-)
+// ─── Icons ────────────────────────────────────────────────────────────────────
 
 const IconChevronLeft = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -41,13 +35,31 @@ const IconSpinner = () => (
   </svg>
 )
 
+const IconUpload = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+  </svg>
+)
+
+const IconFile = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+  </svg>
+)
+
+const IconX = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+
 // ─── Category Card ────────────────────────────────────────────────────────────
 
 function CategoryCard({ cat, selected, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left p-4 rounded-2xl border-2 transition-all duration-200 group
+      className={`w-full text-left p-4 rounded-2xl border-2 transition-all duration-200
         ${selected
           ? 'border-terracotta bg-terracotta/5 shadow-md'
           : 'border-border-soft bg-white hover:border-terracotta/40 hover:shadow-sm'
@@ -80,8 +92,6 @@ function CategoryCard({ cat, selected, onClick }) {
 
 function AnalysisResult({ text }) {
   if (!text) return null
-
-  // Split into sections by emoji headers or bold lines
   const lines = text.split('\n')
   const rendered = []
   let i = 0
@@ -90,7 +100,6 @@ function AnalysisResult({ text }) {
     const line = lines[i].trim()
     if (!line) { i++; continue }
 
-    // Detect emoji section headers
     const emojiHeaderMatch = line.match(/^(📄|🎯|⏰|✅|📞|⚠️|ℹ️|🔍|📌|💡|❗|🚨)\s*(.+)/)
     if (emojiHeaderMatch) {
       rendered.push(
@@ -101,22 +110,18 @@ function AnalysisResult({ text }) {
           </h3>
         </div>
       )
-      i++
-      continue
+      i++; continue
     }
 
-    // Detect **bold** text sections
     if (line.startsWith('**') && line.endsWith('**') && line.length > 4) {
       rendered.push(
         <h3 key={i} className="text-sm font-bold text-text-primary mt-4 mb-1">
           {line.replace(/\*\*/g, '')}
         </h3>
       )
-      i++
-      continue
+      i++; continue
     }
 
-    // Detect bullet points
     if (line.startsWith('- ') || line.startsWith('• ') || line.startsWith('* ')) {
       const bulletItems = []
       while (i < lines.length) {
@@ -124,9 +129,7 @@ function AnalysisResult({ text }) {
         if (bLine.startsWith('- ') || bLine.startsWith('• ') || bLine.startsWith('* ')) {
           bulletItems.push(bLine.replace(/^[-•*]\s+/, ''))
           i++
-        } else {
-          break
-        }
+        } else break
       }
       rendered.push(
         <ul key={`ul-${i}`} className="space-y-1.5 my-2">
@@ -141,30 +144,6 @@ function AnalysisResult({ text }) {
       continue
     }
 
-    // Numbered list
-    if (/^\d+\.\s/.test(line)) {
-      const numItems = []
-      while (i < lines.length) {
-        const nLine = lines[i].trim()
-        if (/^\d+\.\s/.test(nLine)) {
-          numItems.push(nLine.replace(/^\d+\.\s+/, ''))
-          i++
-        } else {
-          break
-        }
-      }
-      rendered.push(
-        <ol key={`ol-${i}`} className="space-y-1.5 my-2 list-decimal list-inside">
-          {numItems.map((item, idx) => (
-            <li key={idx} className="text-sm text-text-primary leading-relaxed pl-1"
-              dangerouslySetInnerHTML={{ __html: formatInline(item) }} />
-          ))}
-        </ol>
-      )
-      continue
-    }
-
-    // Regular paragraph
     rendered.push(
       <p key={i} className="text-sm text-text-primary leading-relaxed my-1.5"
         dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
@@ -175,71 +154,72 @@ function AnalysisResult({ text }) {
   return <div className="space-y-0.5">{rendered}</div>
 }
 
-// Format inline markdown: **bold**, *italic*, links
 function formatInline(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code class="bg-stone-100 px-1 py-0.5 rounded text-xs font-mono">$1</code>')
 }
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
-const STEPS = {
-  HOME: 'home',
-  UPLOAD: 'upload',
-  PAYMENT: 'payment',
-  LOADING: 'loading',
-  RESULT: 'result',
-}
+const STEPS = { HOME: 'home', UPLOAD: 'upload', PAYMENT: 'payment', LOADING: 'loading', RESULT: 'result' }
+const INPUT_MODES = { TEXT: 'text', PDF: 'pdf' }
 
 export default function Home() {
-  // Step state
   const [step, setStep] = useState(STEPS.HOME)
-
-  // Selection state
   const [selectedCategory, setSelectedCategory] = useState(null)
-
-  // Document input
+  const [inputMode, setInputMode] = useState(INPUT_MODES.TEXT)
   const [documentText, setDocumentText] = useState('')
+  const [pdfFile, setPdfFile] = useState(null)
+  const [pdfBase64, setPdfBase64] = useState(null)
   const [question, setQuestion] = useState('')
-
-  // Access code
   const [accessCode, setAccessCode] = useState('')
   const [accessCodeError, setAccessCodeError] = useState('')
   const [isFreeAccess, setIsFreeAccess] = useState(false)
-
-  // Analysis result
   const [analysis, setAnalysis] = useState('')
   const [analysisError, setAnalysisError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-
-  // Follow-up
   const [followUpQuestion, setFollowUpQuestion] = useState('')
   const [followUpAnswer, setFollowUpAnswer] = useState('')
   const [followUpUsed, setFollowUpUsed] = useState(false)
   const [isFollowUpLoading, setIsFollowUpLoading] = useState(false)
   const [followUpError, setFollowUpError] = useState('')
 
-  const resultRef = useRef(null)
-
+  const fileInputRef = useRef(null)
   const cat = selectedCategory ? CATEGORIES[selectedCategory] : null
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
-
-  const handleCategorySelect = (id) => {
-    setSelectedCategory(id)
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    if (file.type !== 'application/pdf') {
+      alert('Seuls les fichiers PDF sont acceptés.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Fichier trop lourd (max 10 Mo).')
+      return
+    }
+    setPdfFile(file)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const base64 = ev.target.result.split(',')[1]
+      setPdfBase64(base64)
+    }
+    reader.readAsDataURL(file)
   }
 
-  const handleContinueToUpload = () => {
-    if (!selectedCategory) return
-    setStep(STEPS.UPLOAD)
+  const handleDrop = (e) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (file) {
+      const fakeEvent = { target: { files: [file] } }
+      handleFileChange(fakeEvent)
+    }
   }
 
-  const handleContinueToPayment = () => {
-    if (!documentText.trim()) return
-    setStep(STEPS.PAYMENT)
-  }
+  const canContinue = inputMode === INPUT_MODES.TEXT
+    ? documentText.trim().length >= 20
+    : pdfBase64 !== null
 
   const handleApplyAccessCode = () => {
     const code = accessCode.toUpperCase().trim()
@@ -258,23 +238,27 @@ export default function Home() {
     setStep(STEPS.LOADING)
 
     try {
+      const body = {
+        category: selectedCategory,
+        question: question.trim(),
+        accessCode: accessCode.toUpperCase().trim(),
+        paymentVerified,
+      }
+
+      if (inputMode === INPUT_MODES.PDF && pdfBase64) {
+        body.pdfBase64 = pdfBase64
+      } else {
+        body.documentText = documentText.trim()
+      }
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category: selectedCategory,
-          documentText: documentText.trim(),
-          question: question.trim(),
-          accessCode: accessCode.toUpperCase().trim(),
-          paymentVerified,
-        }),
+        body: JSON.stringify(body),
       })
 
       const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'analyse.')
-      }
+      if (!res.ok) throw new Error(data.error || "Erreur lors de l'analyse.")
 
       setAnalysis(data.analysis)
       setStep(STEPS.RESULT)
@@ -290,7 +274,6 @@ export default function Home() {
     if (!followUpQuestion.trim() || followUpUsed) return
     setIsFollowUpLoading(true)
     setFollowUpError('')
-
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
@@ -302,10 +285,8 @@ export default function Home() {
           followUpQuestion: followUpQuestion.trim(),
         }),
       })
-
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur.')
-
       setFollowUpAnswer(data.analysis)
       setFollowUpUsed(true)
     } catch (err) {
@@ -318,7 +299,10 @@ export default function Home() {
   const handleReset = () => {
     setStep(STEPS.HOME)
     setSelectedCategory(null)
+    setInputMode(INPUT_MODES.TEXT)
     setDocumentText('')
+    setPdfFile(null)
+    setPdfBase64(null)
     setQuestion('')
     setAccessCode('')
     setAccessCodeError('')
@@ -331,19 +315,12 @@ export default function Home() {
     setFollowUpError('')
   }
 
-  const handlePrint = () => {
-    window.print()
-  }
-
-  // ── Render ───────────────────────────────────────────────────────────────────
-
   return (
     <>
       <Head>
         <title>Lisible — Comprendre vos documents en clair</title>
         <meta name="description" content="Analysez vos courriers administratifs, bulletins de paie, baux, contrats et actes d'huissier en langage simple." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
@@ -354,9 +331,7 @@ export default function Home() {
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <button onClick={handleReset} className="flex items-center gap-2 group">
               <span className="text-2xl">📖</span>
-              <span className="font-bold text-lg text-text-primary group-hover:text-terracotta transition-colors">
-                Lisible
-              </span>
+              <span className="font-bold text-lg text-text-primary group-hover:text-terracotta transition-colors">Lisible</span>
             </button>
             {step !== STEPS.HOME && step !== STEPS.LOADING && (
               <button
@@ -376,77 +351,51 @@ export default function Home() {
         {/* Progress bar */}
         {step !== STEPS.HOME && step !== STEPS.LOADING && (
           <div className="h-1 bg-border-soft no-print">
-            <div
-              className="h-full bg-terracotta transition-all duration-500"
-              style={{
-                width:
-                  step === STEPS.UPLOAD ? '33%' :
-                  step === STEPS.PAYMENT ? '66%' :
-                  step === STEPS.RESULT ? '100%' : '0%'
-              }}
-            />
+            <div className="h-full bg-terracotta transition-all duration-500"
+              style={{ width: step === STEPS.UPLOAD ? '33%' : step === STEPS.PAYMENT ? '66%' : '100%' }} />
           </div>
         )}
 
         <main className="max-w-2xl mx-auto px-4 py-8">
 
-          {/* ── STEP: HOME ─────────────────────────────────────────────────── */}
+          {/* HOME */}
           {step === STEPS.HOME && (
             <div className="space-y-8">
-              {/* Hero */}
               <div className="text-center space-y-3">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta/10 rounded-full text-terracotta text-sm font-medium">
-                  <span>✨</span>
-                  <span>Analyse par intelligence artificielle</span>
+                  <span>✨</span><span>Analyse par intelligence artificielle</span>
                 </div>
                 <h1 className="text-3xl font-bold text-text-primary leading-tight">
                   Comprenez vos documents<br />
                   <span className="text-terracotta">en langage clair</span>
                 </h1>
                 <p className="text-text-secondary text-base leading-relaxed max-w-md mx-auto">
-                  Collez ou déposez votre document. Recevez une analyse simple, rassurante et actionnable en quelques secondes.
+                  Déposez votre PDF ou collez votre texte. Recevez une analyse simple, rassurante et actionnable en quelques secondes.
                 </p>
               </div>
 
-              {/* Category selection */}
               <div>
                 <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
                   Choisissez le type de document
                 </h2>
                 <div className="space-y-2.5">
                   {Object.values(CATEGORIES).map((c) => (
-                    <CategoryCard
-                      key={c.id}
-                      cat={c}
-                      selected={selectedCategory === c.id}
-                      onClick={() => handleCategorySelect(c.id)}
-                    />
+                    <CategoryCard key={c.id} cat={c} selected={selectedCategory === c.id} onClick={() => setSelectedCategory(c.id)} />
                   ))}
                 </div>
               </div>
 
-              {/* CTA */}
               <button
-                onClick={handleContinueToUpload}
+                onClick={() => selectedCategory && setStep(STEPS.UPLOAD)}
                 disabled={!selectedCategory}
                 className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
-                  ${selectedCategory
-                    ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark hover:shadow-lg active:scale-98'
-                    : 'bg-border-soft text-text-secondary cursor-not-allowed'
-                  }`}
+                  ${selectedCategory ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}
               >
-                {selectedCategory
-                  ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}`
-                  : 'Sélectionnez un type de document'}
+                {selectedCategory ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}` : 'Sélectionnez un type de document'}
               </button>
 
-              {/* Trust signals */}
               <div className="grid grid-cols-3 gap-3 text-center">
-                {[
-                  { icon: '🔒', label: 'Données non stockées' },
-                  { icon: '🤝', label: 'Ton rassurant' },
-                  { icon: '⚡', label: 'Résultat en 10 sec' },
-                ].map((item) => (
+                {[{ icon: '📎', label: 'PDF ou texte acceptés' }, { icon: '🔒', label: 'Données non stockées' }, { icon: '⚡', label: 'Résultat en 10 sec' }].map((item) => (
                   <div key={item.label} className="bg-white rounded-xl p-3 border border-border-soft">
                     <div className="text-xl mb-1">{item.icon}</div>
                     <div className="text-xs text-text-secondary font-medium leading-tight">{item.label}</div>
@@ -454,89 +403,126 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Disclaimer */}
               <p className="text-xs text-text-secondary text-center leading-relaxed">
                 Lisible est un outil d'aide à la compréhension. Il ne constitue pas un conseil juridique ou administratif personnalisé.
               </p>
             </div>
           )}
 
-          {/* ── STEP: UPLOAD ───────────────────────────────────────────────── */}
+          {/* UPLOAD */}
           {step === STEPS.UPLOAD && cat && (
             <div className="space-y-6">
-              {/* Header */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-2xl">{cat.emoji}</span>
                   <h2 className="text-xl font-bold text-text-primary">{cat.label}</h2>
                 </div>
-                <p className="text-sm text-text-secondary">
-                  Collez le texte de votre document ci-dessous. Vous pouvez masquer les informations personnelles non nécessaires.
-                </p>
+                <p className="text-sm text-text-secondary">Déposez votre PDF ou collez le texte de votre document.</p>
+              </div>
+
+              {/* Mode selector */}
+              <div className="flex gap-2 p-1 bg-border-soft rounded-xl">
+                <button
+                  onClick={() => setInputMode(INPUT_MODES.PDF)}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${inputMode === INPUT_MODES.PDF ? 'bg-white text-terracotta shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                  📎 Déposer un PDF
+                </button>
+                <button
+                  onClick={() => setInputMode(INPUT_MODES.TEXT)}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${inputMode === INPUT_MODES.TEXT ? 'bg-white text-terracotta shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                  ✏️ Coller le texte
+                </button>
               </div>
 
               {/* Privacy notice */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex gap-2.5">
                 <span className="text-amber-500 text-lg flex-shrink-0">🛡️</span>
-                <div>
-                  <p className="text-xs font-semibold text-amber-800 mb-0.5">Conseil confidentialité</p>
-                  <p className="text-xs text-amber-700 leading-relaxed">
-                    Pensez à masquer votre nom, adresse, numéro de sécurité sociale et toute référence personnelle avant de coller le texte.
-                  </p>
-                </div>
-              </div>
-
-              {/* Text input */}
-              <div>
-                <label className="block text-sm font-semibold text-text-primary mb-2">
-                  Texte du document <span className="text-terracotta">*</span>
-                </label>
-                <textarea
-                  value={documentText}
-                  onChange={(e) => setDocumentText(e.target.value)}
-                  placeholder="Collez ici le texte de votre document…"
-                  rows={10}
-                  className="w-full px-4 py-3 bg-white border-2 border-border-soft rounded-xl text-sm text-text-primary placeholder-text-secondary/50 focus:outline-none focus:border-terracotta transition-colors resize-y leading-relaxed"
-                />
-                <p className="text-xs text-text-secondary mt-1.5 text-right">
-                  {documentText.length} caractères
+                <p className="text-xs text-amber-700 leading-relaxed">
+                  <strong className="text-amber-800">Confidentialité :</strong> Pensez à masquer nom, adresse, numéro de sécurité sociale et toute référence personnelle si possible.
                 </p>
               </div>
+
+              {/* PDF upload zone */}
+              {inputMode === INPUT_MODES.PDF && (
+                <div>
+                  {!pdfFile ? (
+                    <div
+                      onDrop={handleDrop}
+                      onDragOver={(e) => e.preventDefault()}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-terracotta/40 rounded-2xl p-10 text-center cursor-pointer hover:border-terracotta hover:bg-terracotta/5 transition-all"
+                    >
+                      <div className="text-4xl mb-3">📄</div>
+                      <p className="font-semibold text-text-primary mb-1">Déposez votre PDF ici</p>
+                      <p className="text-sm text-text-secondary mb-4">ou cliquez pour sélectionner</p>
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta text-white rounded-xl text-sm font-semibold">
+                        <IconUpload /> Choisir un fichier
+                      </span>
+                      <p className="text-xs text-text-secondary mt-3">PDF uniquement · max 10 Mo</p>
+                      <input ref={fileInputRef} type="file" accept=".pdf,application/pdf" onChange={handleFileChange} className="hidden" />
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+                      <span className="text-2xl">✅</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-green-800 text-sm truncate">{pdfFile.name}</p>
+                        <p className="text-xs text-green-600">{(pdfFile.size / 1024).toFixed(0)} Ko — prêt à analyser</p>
+                      </div>
+                      <button onClick={() => { setPdfFile(null); setPdfBase64(null) }} className="text-green-600 hover:text-red-500 transition-colors">
+                        <IconX />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Text input */}
+              {inputMode === INPUT_MODES.TEXT && (
+                <div>
+                  <label className="block text-sm font-semibold text-text-primary mb-2">
+                    Texte du document <span className="text-terracotta">*</span>
+                  </label>
+                  <textarea
+                    value={documentText}
+                    onChange={(e) => setDocumentText(e.target.value)}
+                    placeholder="Collez ici le texte de votre document…"
+                    rows={10}
+                    className="w-full px-4 py-3 bg-white border-2 border-border-soft rounded-xl text-sm text-text-primary placeholder-text-secondary/50 focus:outline-none focus:border-terracotta transition-colors resize-y leading-relaxed"
+                  />
+                  <p className="text-xs text-text-secondary mt-1.5 text-right">{documentText.length} caractères</p>
+                </div>
+              )}
 
               {/* Optional question */}
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-2">
-                  Votre question spécifique{' '}
-                  <span className="text-text-secondary font-normal">(facultatif)</span>
+                  Votre question spécifique <span className="text-text-secondary font-normal">(facultatif)</span>
                 </label>
                 <input
                   type="text"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="Ex : Quel est le délai pour répondre ? Que signifie cette clause ?"
+                  placeholder="Ex : Quel est le délai pour répondre ?"
                   className="w-full px-4 py-3 bg-white border-2 border-border-soft rounded-xl text-sm text-text-primary placeholder-text-secondary/50 focus:outline-none focus:border-terracotta transition-colors"
                 />
               </div>
 
-              {/* CTA */}
               <button
-                onClick={handleContinueToPayment}
-                disabled={documentText.trim().length < 20}
+                onClick={() => setStep(STEPS.PAYMENT)}
+                disabled={!canContinue}
                 className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
-                  ${documentText.trim().length >= 20
-                    ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark hover:shadow-lg active:scale-98'
-                    : 'bg-border-soft text-text-secondary cursor-not-allowed'
-                  }`}
+                  ${canContinue ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}
               >
                 Continuer →
               </button>
             </div>
           )}
 
-          {/* ── STEP: PAYMENT ──────────────────────────────────────────────── */}
+          {/* PAYMENT */}
           {step === STEPS.PAYMENT && cat && (
             <div className="space-y-6">
-              {/* Summary card */}
               <div className="card p-5">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">{cat.emoji}</span>
@@ -551,39 +537,26 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Error */}
               {analysisError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-sm text-red-700">
-                  ⚠️ {analysisError}
-                </div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-sm text-red-700">⚠️ {analysisError}</div>
               )}
 
-              {/* Access code */}
               <div className="card p-5 space-y-4">
                 <h3 className="font-semibold text-text-primary text-sm">Vous avez un code d'accès ?</h3>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={accessCode}
-                    onChange={(e) => {
-                      setAccessCode(e.target.value.toUpperCase())
-                      setAccessCodeError('')
-                      setIsFreeAccess(false)
-                    }}
+                    onChange={(e) => { setAccessCode(e.target.value.toUpperCase()); setAccessCodeError(''); setIsFreeAccess(false) }}
                     placeholder="ADMIN, TEST, INVITE…"
                     className="flex-1 px-4 py-2.5 bg-beige border-2 border-border-soft rounded-xl text-sm font-mono uppercase focus:outline-none focus:border-terracotta transition-colors"
                     maxLength={20}
                   />
-                  <button
-                    onClick={handleApplyAccessCode}
-                    className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors"
-                  >
+                  <button onClick={handleApplyAccessCode} className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors">
                     Valider
                   </button>
                 </div>
-                {accessCodeError && (
-                  <p className="text-xs text-red-600">{accessCodeError}</p>
-                )}
+                {accessCodeError && <p className="text-xs text-red-600">{accessCodeError}</p>}
                 {isFreeAccess && (
                   <p className="text-xs text-green-700 font-semibold flex items-center gap-1.5">
                     <IconCheck /> Code validé — accès gratuit activé
@@ -591,44 +564,31 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Free access CTA */}
-              {isFreeAccess && (
-                <button
-                  onClick={() => handleAnalyze(false)}
-                  disabled={isLoading}
-                  className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold text-base transition-all duration-200 shadow-md hover:shadow-lg"
-                >
+              {isFreeAccess ? (
+                <button onClick={() => handleAnalyze(false)} disabled={isLoading}
+                  className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold text-base transition-all shadow-md">
                   Analyser gratuitement →
                 </button>
-              )}
-
-              {/* Stripe payment button (placeholder — to be integrated) */}
-              {!isFreeAccess && (
+              ) : (
                 <div className="space-y-3">
-                  <button
-                    onClick={() => handleAnalyze(true)}
-                    className="w-full py-4 bg-terracotta hover:bg-terracotta-dark text-white rounded-2xl font-semibold text-base transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                  >
-                    <IconLock />
-                    Payer {cat.priceLabel} et analyser
+                  <button onClick={() => handleAnalyze(true)}
+                    className="w-full py-4 bg-terracotta hover:bg-terracotta-dark text-white rounded-2xl font-semibold text-base transition-all shadow-md flex items-center justify-center gap-2">
+                    <IconLock /> Payer {cat.priceLabel} et analyser
                   </button>
                   <p className="text-xs text-text-secondary text-center flex items-center justify-center gap-1">
-                    <IconLock />
-                    Paiement sécurisé via Stripe — votre document n'est pas conservé
+                    <IconLock /> Paiement sécurisé via Stripe — votre document n'est pas conservé
                   </p>
                 </div>
               )}
             </div>
           )}
 
-          {/* ── STEP: LOADING ──────────────────────────────────────────────── */}
+          {/* LOADING */}
           {step === STEPS.LOADING && (
             <div className="flex flex-col items-center justify-center py-20 space-y-6">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full border-4 border-terracotta/20 border-t-terracotta animate-spin" />
-                <span className="absolute inset-0 flex items-center justify-center text-2xl">
-                  {cat?.emoji}
-                </span>
+                <span className="absolute inset-0 flex items-center justify-center text-2xl">{cat?.emoji}</span>
               </div>
               <div className="text-center space-y-1">
                 <p className="font-semibold text-text-primary">Analyse en cours…</p>
@@ -636,20 +596,15 @@ export default function Home() {
               </div>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 rounded-full bg-terracotta animate-bounce"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
+                  <div key={i} className="w-2 h-2 rounded-full bg-terracotta animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* ── STEP: RESULT ───────────────────────────────────────────────── */}
+          {/* RESULT */}
           {step === STEPS.RESULT && (
-            <div className="space-y-6" ref={resultRef}>
-              {/* Result header */}
+            <div className="space-y-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -658,36 +613,26 @@ export default function Home() {
                   </div>
                   <p className="text-sm text-text-secondary">{cat?.label}</p>
                 </div>
-                <button
-                  onClick={handlePrint}
-                  className="no-print flex items-center gap-1.5 text-sm text-text-secondary hover:text-terracotta transition-colors px-3 py-1.5 rounded-lg border border-border-soft hover:border-terracotta/30"
-                >
-                  <IconPrint />
-                  Imprimer
+                <button onClick={() => window.print()}
+                  className="no-print flex items-center gap-1.5 text-sm text-text-secondary hover:text-terracotta transition-colors px-3 py-1.5 rounded-lg border border-border-soft hover:border-terracotta/30">
+                  <IconPrint /> Imprimer
                 </button>
               </div>
 
-              {/* Analysis content */}
               <div className="card p-5 md:p-6">
                 <AnalysisResult text={analysis} />
               </div>
 
-              {/* Disclaimer */}
               <div className="bg-stone-100 rounded-xl p-4 text-xs text-text-secondary leading-relaxed">
-                <strong className="text-text-primary">Rappel important :</strong> Cette analyse est fournie à titre informatif uniquement. Elle ne constitue pas un conseil juridique, administratif ou fiscal. En cas de doute, consultez un professionnel ou une structure d'aide gratuite (France Services, Point-Justice, ADIL…).
+                <strong className="text-text-primary">Rappel important :</strong> Cette analyse est fournie à titre informatif uniquement. Elle ne constitue pas un conseil juridique, administratif ou fiscal.
               </div>
 
-              {/* Follow-up question */}
               {!followUpUsed && (
                 <div className="card p-5 no-print">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-lg">💬</span>
-                    <h3 className="font-semibold text-text-primary text-sm">
-                      Une question de suivi incluse
-                    </h3>
-                    <span className="ml-auto text-xs text-terracotta font-semibold bg-terracotta/10 px-2 py-0.5 rounded-full">
-                      Gratuit
-                    </span>
+                    <h3 className="font-semibold text-text-primary text-sm">Une question de suivi incluse</h3>
+                    <span className="ml-auto text-xs text-terracotta font-semibold bg-terracotta/10 px-2 py-0.5 rounded-full">Gratuit</span>
                   </div>
                   <div className="flex gap-2">
                     <input
@@ -699,21 +644,15 @@ export default function Home() {
                       disabled={isFollowUpLoading}
                       className="flex-1 px-4 py-2.5 bg-beige border-2 border-border-soft rounded-xl text-sm focus:outline-none focus:border-terracotta transition-colors disabled:opacity-50"
                     />
-                    <button
-                      onClick={handleFollowUp}
-                      disabled={!followUpQuestion.trim() || isFollowUpLoading}
-                      className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                    >
+                    <button onClick={handleFollowUp} disabled={!followUpQuestion.trim() || isFollowUpLoading}
+                      className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors disabled:opacity-40 flex items-center gap-1.5">
                       {isFollowUpLoading ? <IconSpinner /> : '→'}
                     </button>
                   </div>
-                  {followUpError && (
-                    <p className="text-xs text-red-600 mt-2">{followUpError}</p>
-                  )}
+                  {followUpError && <p className="text-xs text-red-600 mt-2">{followUpError}</p>}
                 </div>
               )}
 
-              {/* Follow-up answer */}
               {followUpAnswer && (
                 <div className="card p-5 border-l-4 border-terracotta">
                   <div className="flex items-center gap-2 mb-3">
@@ -721,19 +660,11 @@ export default function Home() {
                     <h3 className="font-semibold text-text-primary text-sm">Réponse à votre question</h3>
                   </div>
                   <AnalysisResult text={followUpAnswer} />
-                  {followUpUsed && (
-                    <p className="text-xs text-text-secondary mt-3 pt-3 border-t border-border-soft">
-                      La question de suivi gratuite a été utilisée pour cette analyse.
-                    </p>
-                  )}
                 </div>
               )}
 
-              {/* New analysis CTA */}
-              <button
-                onClick={handleReset}
-                className="w-full py-3.5 rounded-2xl border-2 border-terracotta text-terracotta font-semibold text-sm hover:bg-terracotta/5 transition-all duration-200 no-print"
-              >
+              <button onClick={handleReset}
+                className="w-full py-3.5 rounded-2xl border-2 border-terracotta text-terracotta font-semibold text-sm hover:bg-terracotta/5 transition-all no-print">
                 Analyser un autre document
               </button>
             </div>
@@ -741,29 +672,17 @@ export default function Home() {
 
         </main>
 
-        {/* Footer */}
         <footer className="border-t border-border-soft py-6 mt-8 no-print">
           <div className="max-w-2xl mx-auto px-4 text-center">
             <p className="text-xs text-text-secondary">
               © 2024 Lisible — Aide à la compréhension de documents français
-              <span className="mx-2">·</span>
-              <a href="/mentions-legales" className="hover:text-terracotta transition-colors">Mentions légales</a>
-              <span className="mx-2">·</span>
-              <a href="/confidentialite" className="hover:text-terracotta transition-colors">Confidentialité</a>
             </p>
           </div>
         </footer>
       </div>
 
-      {/* Print styles */}
       <style jsx global>{`
-        @media print {
-          .no-print { display: none !important; }
-          header { display: none !important; }
-          footer { display: none !important; }
-          body { background: white !important; }
-          .card { border: 1px solid #ddd !important; box-shadow: none !important; }
-        }
+        @media print { .no-print { display: none !important; } header { display: none !important; } footer { display: none !important; } }
       `}</style>
     </>
   )

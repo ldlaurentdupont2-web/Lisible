@@ -14,6 +14,18 @@ export const config = {
   },
 }
 
+async function extractTextFromPdf(base64Data) {
+  try {
+    const pdfParse = (await import('pdf-parse/lib/pdf-parse.js')).default
+    const buffer = Buffer.from(base64Data, 'base64')
+    const data = await pdfParse(buffer)
+    return data.text
+  } catch (err) {
+    console.error('PDF parse error:', err)
+    throw new Error('Impossible de lire ce PDF. Essayez de coller le texte directement.')
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -22,6 +34,7 @@ export default async function handler(req, res) {
   const {
     category,
     documentText,
+    pdfBase64,
     question,
     accessCode,
     paymentVerified,
@@ -47,7 +60,6 @@ export default async function handler(req, res) {
   let messages = []
 
   if (isFollowUp && previousAnalysis) {
-    // Follow-up question: include prior analysis as context
     messages = [
       {
         role: 'user',
@@ -55,14 +67,22 @@ export default async function handler(req, res) {
       },
     ]
   } else {
-    // First analysis
-    let userMessage = ''
+    // Extract text from PDF if provided
+    let finalText = documentText || ''
 
-    if (!documentText || documentText.trim().length < 10) {
+    if (pdfBase64) {
+      try {
+        finalText = await extractTextFromPdf(pdfBase64)
+      } catch (err) {
+        return res.status(400).json({ error: err.message })
+      }
+    }
+
+    if (!finalText || finalText.trim().length < 10) {
       return res.status(400).json({ error: 'Document trop court ou vide.' })
     }
 
-    userMessage = `Voici le document à analyser :\n\n${documentText}`
+    let userMessage = `Voici le document à analyser :\n\n${finalText}`
     if (question && question.trim()) {
       userMessage += `\n\nQuestion spécifique de l'utilisateur : ${question.trim()}`
     }
