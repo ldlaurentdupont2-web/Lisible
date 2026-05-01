@@ -180,12 +180,12 @@ export default function Home() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     const urlParams = new URLSearchParams(window.location.search)
-    const paid = urlParams.get('paid') || sessionStorage.getItem('lisible_paid')
-    const pendingRaw = sessionStorage.getItem('lisible_pending')
+   const paid = urlParams.get('paid') || localStorage.getItem('lisible_paid')
+const pendingRaw = localStorage.getItem('lisible_pending')
     if (paid === '1' && pendingRaw) {
       window.history.replaceState({}, '', '/')
-      sessionStorage.removeItem('lisible_paid')
-      sessionStorage.removeItem('lisible_pending')
+localStorage.removeItem('lisible_paid')
+localStorage.removeItem('lisible_pending')
       try {
         const data = JSON.parse(pendingRaw)
         setSelectedCategory(data.category)
@@ -282,7 +282,7 @@ export default function Home() {
     setIsCheckoutLoading(true)
     // Sauvegarder les données du document en sessionStorage
     // pour les récupérer après le retour de Stripe
-    sessionStorage.setItem('lisible_pending', JSON.stringify({
+localStorage.setItem('lisible_pending', JSON.stringify({
       category: selectedCategory,
       question: question.trim(),
       inputMode,

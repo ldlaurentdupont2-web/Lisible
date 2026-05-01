@@ -8,7 +8,7 @@ export default function Success() {
     // Marquer le paiement comme validé
     // Les données du document sont déjà dans sessionStorage (lisible_pending)
     // index.js les récupérera et lancera l'analyse automatiquement
-    sessionStorage.setItem('lisible_paid', '1')
+   localStorage.setItem('lisible_paid', '1')
     router.push('/?paid=1')
   }, [])
 
