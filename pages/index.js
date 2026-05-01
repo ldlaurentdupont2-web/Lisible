@@ -179,9 +179,11 @@ export default function Home() {
   // ─── Détection retour Stripe après paiement ───────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const paid = sessionStorage.getItem('lisible_paid')
+    const urlParams = new URLSearchParams(window.location.search)
+    const paid = urlParams.get('paid') || sessionStorage.getItem('lisible_paid')
     const pendingRaw = sessionStorage.getItem('lisible_pending')
     if (paid === '1' && pendingRaw) {
+      window.history.replaceState({}, '', '/')
       sessionStorage.removeItem('lisible_paid')
       sessionStorage.removeItem('lisible_pending')
       try {
@@ -192,7 +194,6 @@ export default function Home() {
         setDocumentText(data.documentText || '')
         setUploadedFile(data.uploadedFile || null)
         setStep(STEPS.LOADING)
-        // Lancer l'analyse avec les données récupérées
         launchAnalysis(data)
       } catch (e) {
         console.error('Erreur récupération données pending:', e)
