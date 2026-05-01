@@ -1,20 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function Success() {
-  const router = useRouter();
-  const { session_id } = router.query;
-  const [credits, setCredits] = useState(null);
+  const router = useRouter()
 
   useEffect(() => {
-    if (session_id) {
-      // Ajouter 1 crédit en localStorage
-      const current = parseInt(localStorage.getItem('lisible_credits') || '0');
-      const newTotal = current + 1;
-      localStorage.setItem('lisible_credits', newTotal.toString());
-      setCredits(newTotal);
-    }
-  }, [session_id]);
+    // Marquer le paiement comme validé
+    // Les données du document sont déjà dans sessionStorage (lisible_pending)
+    // index.js les récupérera et lancera l'analyse automatiquement
+    sessionStorage.setItem('lisible_paid', '1')
+    router.push('/')
+  }, [])
 
   return (
     <div style={{
@@ -24,43 +20,26 @@ export default function Success() {
       alignItems: 'center',
       justifyContent: 'center',
       fontFamily: 'sans-serif',
-      backgroundColor: '#faf9f6'
+      backgroundColor: '#faf9f6',
+      gap: '16px',
     }}>
       <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '48px',
-        textAlign: 'center',
-        maxWidth: '480px',
-        boxShadow: '0 2px 24px rgba(0,0,0,0.08)'
-      }}>
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
-        <h1 style={{ fontSize: '24px', marginBottom: '8px', color: '#1a1a1a' }}>
-          Paiement confirmé
-        </h1>
-        <p style={{ color: '#666', marginBottom: '8px' }}>
-          Votre analyse est disponible.
-        </p>
-        {credits !== null && (
-          <p style={{ color: '#888', fontSize: '14px', marginBottom: '32px' }}>
-            Crédits disponibles : <strong>{credits}</strong>
-          </p>
-        )}
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            background: '#c0674a',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '14px 32px',
-            fontSize: '16px',
-            cursor: 'pointer'
-          }}
-        >
-          Analyser mon document
-        </button>
-      </div>
+        width: '48px',
+        height: '48px',
+        border: '4px solid #e8d5c4',
+        borderTop: '4px solid #c0674a',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      }} />
+      <p style={{ color: '#666', fontSize: '15px', margin: 0 }}>
+        Paiement confirmé, lancement de l'analyse…
+      </p>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
-  );
+  )
 }

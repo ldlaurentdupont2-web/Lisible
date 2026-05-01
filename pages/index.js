@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -171,9 +171,146 @@ export default function Home() {
   const [followUpUsed, setFollowUpUsed] = useState(false)
   const [isFollowUpLoading, setIsFollowUpLoading] = useState(false)
   const [followUpError, setFollowUpError] = useState('')
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
 
   const fileInputRef = useRef(null)
   const cat = selectedCategory ? CATEGORIES[selectedCategory] : null
+
+  // ─── Détection retour Stripe après paiement ───────────────────────────────
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const paid = sessionStorage.getItem('lisible_paid')
+    const pendingRaw = sessionStorage.getItem('lisible_pending')
+    if (paid === '1' && pendingRaw) {
+      sessionStorage.removeItem('lisible_paid')
+      sessionStorage.removeItem('lisible_pending')
+      try {
+        const data = JSON.parse(pendingRaw)
+        setSelectedCategory(data.category)
+        setQuestion(data.question || '')
+        setInputMode(data.inputMode || INPUT_MODES.FILE)
+        setDocumentText(data.documentText || '')
+        setUploadedFile(data.uploadedFile || null)
+        setStep(STEPS.LOADING)
+        // Lancer l'analyse avec les données récupérées
+        launchAnalysis(data)
+      } catch (e) {
+        console.error('Erreur récupération données pending:', e)
+      }
+    }
+  }, [])
+
+  // ─── Analyse avec données passées en paramètre (pour retour Stripe) ────────
+  const launchAnalysis = async (data) => {
+    setIsLoading(true)
+    setAnalysisError('')
+    try {
+      const body = {
+        category: data.category,
+        question: data.question || '',
+        paymentVerified: true,
+      }
+      if (data.inputMode === INPUT_MODES.FILE && data.uploadedFile) {
+        if (data.uploadedFile.fileType === 'image') {
+          body.imageBase64 = data.uploadedFile.base64
+          body.imageMediaType = data.uploadedFile.type
+        } else {
+          body.pdfBase64 = data.uploadedFile.base64
+        }
+      } else {
+        body.documentText = data.documentText || ''
+      }
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || "Erreur lors de l'analyse.")
+      setAnalysis(result.analysis)
+      setStep(STEPS.RESULT)
+    } catch (err) {
+      setAnalysisError(err.message)
+      setStep(STEPS.PAYMENT)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // ─── Analyse standard (code gratuit) ─────────────────────────────────────
+  const handleAnalyze = async () => {
+    setIsLoading(true)
+    setAnalysisError('')
+    setStep(STEPS.LOADING)
+    try {
+      const body = {
+        category: selectedCategory,
+        question: question.trim(),
+        accessCode: accessCode.toUpperCase().trim(),
+        paymentVerified: false,
+      }
+      if (inputMode === INPUT_MODES.FILE && uploadedFile) {
+        if (uploadedFile.fileType === 'image') {
+          body.imageBase64 = uploadedFile.base64
+          body.imageMediaType = uploadedFile.type
+        } else {
+          body.pdfBase64 = uploadedFile.base64
+        }
+      } else {
+        body.documentText = documentText.trim()
+      }
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Erreur lors de l'analyse.")
+      setAnalysis(data.analysis)
+      setStep(STEPS.RESULT)
+    } catch (err) {
+      setAnalysisError(err.message)
+      setStep(STEPS.PAYMENT)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // ─── Paiement Stripe ──────────────────────────────────────────────────────
+  const handleStripeCheckout = async () => {
+    setIsCheckoutLoading(true)
+    // Sauvegarder les données du document en sessionStorage
+    // pour les récupérer après le retour de Stripe
+    sessionStorage.setItem('lisible_pending', JSON.stringify({
+      category: selectedCategory,
+      question: question.trim(),
+      inputMode,
+      documentText: documentText.trim(),
+      uploadedFile: uploadedFile ? {
+        base64: uploadedFile.base64,
+        type: uploadedFile.type,
+        fileType: uploadedFile.fileType,
+        name: uploadedFile.name,
+        size: uploadedFile.size,
+      } : null,
+    }))
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Erreur lors de la création du paiement. Réessayez.')
+        setIsCheckoutLoading(false)
+      }
+    } catch (err) {
+      alert('Erreur réseau. Vérifiez votre connexion et réessayez.')
+      setIsCheckoutLoading(false)
+    }
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -209,45 +346,6 @@ export default function Home() {
     else { setAccessCodeError('Code invalide.'); setIsFreeAccess(false) }
   }
 
-  const handleAnalyze = async (paymentVerified = false) => {
-    setIsLoading(true)
-    setAnalysisError('')
-    setStep(STEPS.LOADING)
-    try {
-      const body = {
-        category: selectedCategory,
-        question: question.trim(),
-        accessCode: accessCode.toUpperCase().trim(),
-        paymentVerified,
-      }
-      if (inputMode === INPUT_MODES.FILE && uploadedFile) {
-        if (uploadedFile.fileType === 'image') {
-          body.imageBase64 = uploadedFile.base64
-          body.imageMediaType = uploadedFile.type
-        } else {
-          body.pdfBase64 = uploadedFile.base64
-        }
-      } else {
-        body.documentText = documentText.trim()
-      }
-
-      const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Erreur lors de l'analyse.")
-      setAnalysis(data.analysis)
-      setStep(STEPS.RESULT)
-    } catch (err) {
-      setAnalysisError(err.message)
-      setStep(STEPS.PAYMENT)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleFollowUp = async () => {
     if (!followUpQuestion.trim() || followUpUsed) return
     setIsFollowUpLoading(true)
@@ -275,6 +373,7 @@ export default function Home() {
     setAccessCode(''); setAccessCodeError(''); setIsFreeAccess(false)
     setAnalysis(''); setAnalysisError('')
     setFollowUpQuestion(''); setFollowUpAnswer(''); setFollowUpUsed(false); setFollowUpError('')
+    setIsCheckoutLoading(false)
   }
 
   return (
@@ -495,15 +594,20 @@ export default function Home() {
               </div>
 
               {isFreeAccess ? (
-                <button onClick={() => handleAnalyze(false)} disabled={isLoading}
+                <button onClick={() => handleAnalyze()} disabled={isLoading}
                   className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold text-base transition-all shadow-md">
                   Analyser gratuitement →
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <button onClick={() => handleAnalyze(true)}
-                    className="w-full py-4 bg-terracotta hover:bg-terracotta-dark text-white rounded-2xl font-semibold text-base transition-all shadow-md flex items-center justify-center gap-2">
-                    <IconLock /> Payer {cat.priceLabel} et analyser
+                  <button
+                    onClick={handleStripeCheckout}
+                    disabled={isCheckoutLoading}
+                    className="w-full py-4 bg-terracotta hover:bg-terracotta-dark text-white rounded-2xl font-semibold text-base transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                    {isCheckoutLoading
+                      ? <><IconSpinner /> Redirection vers le paiement…</>
+                      : <><IconLock /> Payer {cat.priceLabel} et analyser</>
+                    }
                   </button>
                   <p className="text-xs text-text-secondary text-center flex items-center justify-center gap-1">
                     <IconLock /> Paiement sécurisé via Stripe — votre document n'est pas conservé
