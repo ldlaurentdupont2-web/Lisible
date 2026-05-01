@@ -118,8 +118,10 @@ export default async function handler(req, res) {
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
-      system: SYSTEM_PROMPTS[category],
+      max_tokens: 4096,
+      system: SYSTEM_PROMPTS[category] + '
+
+CONSIGNE IMPORTANTE : Sois concis et complet. Limite chaque section à 3-4 phrases maximum. Ne dépasse pas 800 mots au total. Termine toujours ton analyse complètement.',
       messages,
     })
 
