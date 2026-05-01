@@ -16,7 +16,7 @@ export const config = {
 
 async function extractTextFromPdf(base64Data) {
   try {
-    const pdfParse = (await import('pdf-parse/lib/pdf-parse.js')).default
+ const pdfParse = (await import('pdf-parse')).default
     const buffer = Buffer.from(base64Data, 'base64')
     const data = await pdfParse(buffer)
     return data.text
