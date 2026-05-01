@@ -15,13 +15,6 @@ export const config = {
   maxDuration: 60,
 }
 
-async function extractTextFromPdf(base64Data) {
-  const pdfParse = (await import('pdf-parse')).default
-  const buffer = Buffer.from(base64Data, 'base64')
-  const data = await pdfParse(buffer)
-  return data.text
-}
-
 export default async function handler(req, res) {
   try {
     if (req.method !== 'POST') {
@@ -53,20 +46,44 @@ export default async function handler(req, res) {
       return res.status(402).json({ error: 'Paiement requis.' })
     }
 
+    const questionText =
+      question && question.trim()
+        ? `\n\nQuestion spécifique de l'utilisateur : ${question.trim()}`
+        : ''
+
     let messages = []
 
     if (isFollowUp && previousAnalysis) {
+      // Question de suivi
       messages = [
         {
           role: 'user',
           content: `Voici l'analyse que tu as fournie précédemment :\n\n${previousAnalysis}\n\nQuestion de suivi de l'utilisateur : ${followUpQuestion}`,
         },
       ]
+    } else if (pdfBase64) {
+      // PDF — envoyé directement à Claude comme document base64
+      messages = [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: pdfBase64,
+              },
+            },
+            {
+              type: 'text',
+              text: `Voici le document à analyser (PDF).${questionText}`,
+            },
+          ],
+        },
+      ]
     } else if (imageBase64 && imageMediaType) {
-      const questionText =
-        question && question.trim()
-          ? `\n\nQuestion spécifique de l'utilisateur : ${question.trim()}`
-          : ''
+      // Image
       messages = [
         {
           role: 'user',
@@ -87,28 +104,15 @@ export default async function handler(req, res) {
         },
       ]
     } else {
-      let finalText = documentText || ''
-
-      if (pdfBase64) {
-        try {
-          finalText = await extractTextFromPdf(pdfBase64)
-        } catch (err) {
-          console.error('PDF parse error:', err)
-          return res.status(400).json({
-            error: 'Impossible de lire ce PDF. Essayez de coller le texte directement.',
-          })
-        }
-      }
-
+      // Texte brut
+      const finalText = documentText || ''
       if (!finalText || finalText.trim().length < 10) {
         return res.status(400).json({ error: 'Document trop court ou vide.' })
       }
-
       let userMessage = `Voici le document à analyser :\n\n${finalText}`
       if (question && question.trim()) {
         userMessage += `\n\nQuestion spécifique de l'utilisateur : ${question.trim()}`
       }
-
       messages = [{ role: 'user', content: userMessage }]
     }
 
