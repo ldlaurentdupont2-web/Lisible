@@ -6,6 +6,8 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
+const CONCISION_NOTE = '\n\nCONSIGNE : Sois concis et complet. Maximum 3-4 phrases par section, 800 mots au total. Termine toujours ton analyse en entier.'
+
 export const config = {
   api: {
     bodyParser: {
@@ -54,7 +56,6 @@ export default async function handler(req, res) {
     let messages = []
 
     if (isFollowUp && previousAnalysis) {
-      // Question de suivi
       messages = [
         {
           role: 'user',
@@ -62,7 +63,6 @@ export default async function handler(req, res) {
         },
       ]
     } else if (pdfBase64) {
-      // PDF — envoyé directement à Claude comme document base64
       messages = [
         {
           role: 'user',
@@ -83,7 +83,6 @@ export default async function handler(req, res) {
         },
       ]
     } else if (imageBase64 && imageMediaType) {
-      // Image
       messages = [
         {
           role: 'user',
@@ -104,7 +103,6 @@ export default async function handler(req, res) {
         },
       ]
     } else {
-      // Texte brut
       const finalText = documentText || ''
       if (!finalText || finalText.trim().length < 10) {
         return res.status(400).json({ error: 'Document trop court ou vide.' })
@@ -119,9 +117,7 @@ export default async function handler(req, res) {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: SYSTEM_PROMPTS[category] + '
-
-CONSIGNE IMPORTANTE : Sois concis et complet. Limite chaque section à 3-4 phrases maximum. Ne dépasse pas 800 mots au total. Termine toujours ton analyse complètement.',
+      system: SYSTEM_PROMPTS[category] + CONCISION_NOTE,
       messages,
     })
 
