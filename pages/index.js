@@ -55,49 +55,56 @@ const EXAMPLES = {
   administratif: {
     label: 'Courrier administratif', emoji: '🏛️',
     docDescription: 'Notification de trop-perçu CAF — 347 €',
-    imageUrl: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=600&q=80',
+    pdfCourrier: '/courrier_caf_exemple.pdf',
     analysis: {
-      en_clair: "Vous avez reçu une notification de trop-perçu de 347 € de votre organisme social au titre des aides au logement. Cela signifie que l'organisme estime vous avoir versé davantage que ce à quoi vous aviez droit. Ce type de courrier est fréquent et ne signifie pas que vous avez commis une fraude.",
+      en_clair: "Votre organisme social (CAF) vous informe qu'il vous a versé trop d'APL entre octobre et décembre 2023, suite à un changement de situation qui n'aurait pas été déclaré à temps. Il vous demande de rembourser 347 € dans un délai de 20 jours. Plusieurs options s'offrent à vous : payer en une fois, demander un paiement en plusieurs fois, ou contester si vous pensez que le calcul est incorrect. Ce courrier est courant et gérable — vous avez 20 jours pour choisir comment répondre, et des options concrètes existent pour chaque situation.",
       a_verifier_maintenant: [
-        "Vérifier si le montant de 347 € correspond bien à votre situation réelle sur la période mentionnée",
-        "Contacter l'organisme avant le délai de 20 jours pour éviter une retenue automatique",
-        "Demander un échelonnement si vous ne pouvez pas payer en une seule fois",
-        "Rassembler les justificatifs (avis d'imposition, bulletins de salaire) si vous souhaitez contester",
+        "Avez-vous bien effectué un changement de situation entre octobre et décembre 2023 (déménagement, changement de revenus, mise en couple…) ? Si oui, était-il déclaré ou non ?",
+        "Si vous pensez avoir déclaré ce changement à temps, rassemblez vos preuves (accusé de réception, message envoyé via votre espace caf.fr) pour préparer une contestation.",
+        "Si vous souhaitez un remboursement échelonné, contactez la CAF au 3230 avant l'expiration du délai de 20 jours mentionné dans le courrier.",
+        "Vérifiez la date exacte de réception du courrier pour calculer votre date limite de réponse (20 jours à partir de cette date).",
+        "Connectez-vous à votre espace personnel sur caf.fr pour vérifier le détail du calcul du trop-perçu dans votre dossier.",
       ],
       grands_chiffres: [
-        { label: "Montant réclamé", valeur: "347 €" },
-        { label: "Délai de réponse", valeur: "20 jours" },
-        { label: "Période concernée", valeur: "Janvier – Mars" },
+        { label: "Montant du trop-perçu réclamé", valeur: "347,00 €" },
+        { label: "Délai de réponse", valeur: "20 jours à compter de la réception" },
+        { label: "Période concernée", valeur: "1er octobre – 31 décembre 2023" },
+        { label: "Numéro de dossier", valeur: "Visible sur votre courrier" },
       ],
       lignes_expliquees: null,
       points_attention: [
-        "Si vous pensez que le calcul est erroné, vous avez le droit de contester — un courrier motivé avec justificatifs suffit",
-        "Le délai de 20 jours est important : passé ce délai, la retenue peut être effectuée sur vos prochaines allocations",
+        "Si vous ne répondez pas dans les 20 jours, la CAF peut retenir ce montant directement sur vos prochaines allocations — ce n'est pas une sanction, c'est une procédure automatique habituelle.",
+        "Le courrier mentionne un 'changement de situation non déclaré' : vérifiez si cette affirmation correspond bien à votre situation réelle, car si vous avez déclaré ce changement, vous pouvez le contester.",
+        "Un trop-perçu peut être remboursé de façon échelonnée si un paiement unique est difficile — n'hésitez pas à le demander explicitement à la CAF.",
       ],
-      message_pret: `Objet : Contestation trop-perçu — Dossier n° [VOTRE NUMÉRO]
+      message_pret: `Objet : Contestation du trop-perçu APL — N° dossier : CAF-2024-03-18471
 
 Madame, Monsieur,
 
-J'ai bien reçu votre courrier du [DATE] m'informant d'un trop-perçu de 347 € au titre de mes allocations logement pour la période de janvier à mars.
+J'ai bien reçu votre courrier en date du 15 mars 2024 m'informant d'un trop-perçu d'APL de 347,00 € pour la période du 1er octobre au 31 décembre 2023.
 
-Après vérification de ma situation, je souhaite contester ce montant pour les raisons suivantes : [PRÉCISEZ VOTRE MOTIF].
+Je me permets de contester cette notification, car j'estime avoir [déclaré mon changement de situation dans les délais / ne pas avoir effectué de changement de situation sur cette période — à adapter à votre cas].
 
-Je vous transmets en pièce jointe les justificatifs suivants : [LISTE VOS DOCUMENTS].
+Je vous joins les justificatifs suivants à l'appui de ma demande : [liste de vos documents].
 
-Dans l'attente de votre réponse, je reste à votre disposition pour tout renseignement complémentaire.
+Je vous serais reconnaissant(e) de bien vouloir réexaminer mon dossier et de me faire part de votre réponse dans les meilleurs délais.
+
+Dans l'attente, je reste à votre disposition pour tout renseignement complémentaire.
 
 Cordialement,
-[VOTRE NOM]`,
+[Votre nom — Votre numéro allocataire]`,
       glossaire: [
-        { terme: "Trop-perçu", definition: "Somme versée en trop par rapport à ce à quoi vous aviez droit, que l'organisme vous demande de rembourser." },
-        { terme: "Droit à la contestation", definition: "Vous pouvez demander une révision de la décision en envoyant un courrier motivé avec des justificatifs." },
-        { terme: "Délai de grâce", definition: "Période pendant laquelle vous pouvez répondre avant que l'organisme procède à une retenue automatique." },
+        { terme: "Trop-perçu", definition: "Somme versée par la CAF qui dépasse ce à quoi vous aviez droit. Elle doit en principe être remboursée." },
+        { terme: "APL (Aide Personnalisée au Logement)", definition: "Aide financière versée par la CAF pour réduire le montant de votre loyer ou de vos mensualités de remboursement immobilier." },
+        { terme: "Recours amiable", definition: "Démarche pour contester une décision directement auprès de l'organisme qui l'a prise, sans passer par un tribunal. C'est la première étape avant toute autre contestation." },
+        { terme: "Retenue sur allocations", definition: "Si le trop-perçu n'est pas remboursé, la CAF peut le récupérer en déduisant automatiquement une partie de vos prochaines allocations." },
       ],
       ressources: [
-        { nom: "France Services", description: "Guichet universel gratuit pour vous aider à répondre au courrier", lien: "https://www.france-services.gouv.fr" },
-        { nom: "Point-Justice", description: "Consultations juridiques gratuites en mairie", lien: "https://www.justice.fr" },
+        { nom: "CAF — Espace personnel caf.fr", description: "Pour consulter le détail de votre dossier, envoyer des documents et gérer le remboursement ou l'échelonnement en ligne.", lien: "https://www.caf.fr" },
+        { nom: "France Services", description: "Des agents peuvent vous aider à comprendre ce courrier, préparer votre réponse ou contester la décision, gratuitement et près de chez vous.", lien: "https://www.france-services.gouv.fr" },
+        { nom: "Défenseur des droits", description: "Si vous estimez que la CAF n'a pas traité votre situation correctement et que la voie amiable n'a pas abouti.", lien: "https://www.defenseurdesdroits.fr" },
       ],
-      verdict: { niveau: "a_verifier", message: "Ce courrier nécessite une action dans les 20 jours, mais des solutions existent — vous n'êtes pas seul(e)." },
+      verdict: { niveau: "a_verifier", message: "Ce courrier nécessite une action dans les 20 jours — des options concrètes existent, vous n'êtes pas seul(e)." },
       niveau_confiance: "élevé",
     },
     questions: [
@@ -619,12 +626,30 @@ function ExampleModal({ categoryId, onClose }) {
         <div className="p-5 space-y-5">
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">Document analysé</p>
-            <div className="rounded-xl overflow-hidden border border-border-soft bg-stone-50">
-              <img src={ex.imageUrl} alt="" className="w-full h-40 object-cover opacity-80" />
-              <div className="px-4 py-2 bg-amber-50 border-t border-amber-100">
-                <p className="text-xs text-amber-700">📋 Document fictif à titre illustratif — les données sont inventées</p>
+            {ex.pdfCourrier ? (
+              <div className="rounded-xl overflow-hidden border border-border-soft bg-stone-50">
+                <iframe
+                  src={ex.pdfCourrier}
+                  className="w-full"
+                  style={{ height: '280px' }}
+                  title="Faux courrier CAF exemple"
+                />
+                <div className="px-4 py-2 bg-amber-50 border-t border-amber-100 flex items-center justify-between">
+                  <p className="text-xs text-amber-700">📋 Document fictif — données inventées</p>
+                  <a href={ex.pdfCourrier} download
+                    className="text-xs text-terracotta font-semibold hover:underline flex items-center gap-1">
+                    ↓ Télécharger le PDF
+                  </a>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="rounded-xl overflow-hidden border border-border-soft bg-stone-50">
+                <img src={ex.imageUrl} alt="" className="w-full h-40 object-cover opacity-80" />
+                <div className="px-4 py-2 bg-amber-50 border-t border-amber-100">
+                  <p className="text-xs text-amber-700">📋 Document fictif à titre illustratif — les données sont inventées</p>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">Analyse Lisible</p>
