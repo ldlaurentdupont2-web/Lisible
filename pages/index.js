@@ -410,8 +410,8 @@ function CopyButton({ text }) {
 }
 
 function StructuredResult({ data, catEmoji }) {
-  const [showGlossaire, setShowGlossaire] = useState(false)
-  const [showMessage, setShowMessage] = useState(false)
+  const [showGlossaire, setShowGlossaire] = useState(true)
+  const [showMessage, setShowMessage] = useState(true)
   if (!data) return null
 
   return (
