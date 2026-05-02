@@ -241,6 +241,39 @@ Ne pas réagir dans le délai de 2 mois, en pensant que la situation va se régl
   },
 }
 
+function CodeAccesSection({ accessCode, setAccessCode, accessCodeError, setAccessCodeError, isFreeAccess, setIsFreeAccess, handleApplyAccessCode }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="border border-border-soft rounded-xl overflow-hidden">
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 text-sm text-text-secondary hover:text-text-primary hover:bg-stone-50 transition-colors">
+        <span>{isFreeAccess ? '✅ Code validé — accès gratuit activé' : 'J\'ai un code d\'accès'}</span>
+        <span className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </button>
+      {open && (
+        <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border-soft bg-stone-50">
+          <div className="flex gap-2">
+            <input type="text" value={accessCode}
+              onChange={(e) => { setAccessCode(e.target.value.toUpperCase()); setAccessCodeError(''); setIsFreeAccess(false) }}
+              placeholder="Entrez votre code"
+              className="flex-1 px-4 py-2.5 bg-white border-2 border-border-soft rounded-xl text-sm font-mono uppercase focus:outline-none focus:border-terracotta transition-colors"
+              maxLength={20} />
+            <button onClick={handleApplyAccessCode} className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors">
+              Valider
+            </button>
+          </div>
+          {accessCodeError && <p className="text-xs text-red-600">{accessCodeError}</p>}
+          {isFreeAccess && (
+            <p className="text-xs text-green-700 font-semibold">✅ Code validé — accès gratuit activé</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function CategoryCard({ cat, selected, onClick }) {
   return (
     <button onClick={onClick}
@@ -905,67 +938,74 @@ export default function Home() {
 
           {/* ─── PAYMENT ────────────────────────────────────────────────────── */}
           {step === STEPS.PAYMENT && cat && (
-            <div className="space-y-6">
+            <div className="space-y-5">
 
-              {/* Mini-diagnostic */}
-              <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 space-y-3">
-                <h3 className="font-semibold text-text-primary text-sm flex items-center gap-2">
-                  <span>🔍</span> Avant de payer
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-text-secondary">Document sélectionné</span>
-                    <span className="font-medium text-text-primary">{cat.emoji} {cat.label}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-text-secondary">Format</span>
-                    <span className="font-medium text-text-primary">
-                      {inputMode === INPUT_MODES.FILE
-                        ? (uploadedFile?.fileType === 'image' ? '🖼️ Image' : '📄 PDF')
-                        : '✏️ Texte collé'}
+              {/* Titre */}
+              <div>
+                <h2 className="text-xl font-bold text-text-primary">Votre document est prêt à être analysé</h2>
+              </div>
+
+              {/* Mini-diagnostic en checklist */}
+              <div className="bg-white border border-border-soft rounded-2xl p-5 space-y-3">
+                {[
+                  { label: 'Document reçu', value: `${cat.emoji} ${cat.label}` },
+                  {
+                    label: 'Format accepté',
+                    value: inputMode === INPUT_MODES.FILE
+                      ? (uploadedFile?.fileType === 'image' ? 'Image (JPG / PNG)' : 'PDF')
+                      : 'Texte collé',
+                  },
+                  { label: 'Analyse proposée', value: 'Analyse complète + PDF + 1 question complémentaire' },
+                  { label: 'Prix', value: cat.priceLabel, highlight: true },
+                ].map(({ label, value, highlight }) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </span>
+                    <div className="flex-1 flex items-center justify-between gap-2">
+                      <span className="text-sm text-text-secondary">{label}</span>
+                      <span className={`text-sm font-semibold ${highlight ? 'text-terracotta text-base' : 'text-text-primary'}`}>{value}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-text-secondary">Analyse proposée</span>
-                    <span className="font-medium text-text-primary">Analyse complète + 1 question de suivi</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm border-t border-stone-200 pt-2 mt-2">
-                    <span className="font-semibold text-text-primary">Prix</span>
-                    <span className="font-bold text-terracotta text-base">{cat.priceLabel}</span>
-                  </div>
-                </div>
+                ))}
                 {question && (
-                  <div className="bg-white rounded-xl px-3 py-2.5 border border-border-soft">
+                  <div className="mt-1 bg-stone-50 rounded-xl px-3 py-2.5 border border-border-soft">
                     <p className="text-xs text-text-secondary mb-0.5">Votre question</p>
                     <p className="text-sm text-text-primary italic">"{question}"</p>
                   </div>
                 )}
               </div>
 
+              {/* Note de réassurance */}
+              <p className="text-xs text-text-secondary leading-relaxed text-center px-2">
+                Avant paiement, Lisible vérifie que votre document est dans un format accepté.<br />
+                L'analyse vous aide à comprendre le document, sans remplacer un professionnel qualifié.
+              </p>
+
               {analysisError && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-sm text-red-700">⚠️ {analysisError}</div>
               )}
 
-              <div className="card p-5 space-y-4">
-                <h3 className="font-semibold text-text-primary text-sm">Vous avez un code d'accès ?</h3>
-                <div className="flex gap-2">
-                  <input type="text" value={accessCode}
-                    onChange={(e) => { setAccessCode(e.target.value.toUpperCase()); setAccessCodeError(''); setIsFreeAccess(false) }}
-                    placeholder="Entrez votre code"
-                    className="flex-1 px-4 py-2.5 bg-beige border-2 border-border-soft rounded-xl text-sm font-mono uppercase focus:outline-none focus:border-terracotta transition-colors"
-                    maxLength={20} />
-                  <button onClick={handleApplyAccessCode} className="px-4 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors">
-                    Valider
-                  </button>
-                </div>
-                {accessCodeError && <p className="text-xs text-red-600">{accessCodeError}</p>}
-                {isFreeAccess && (
-                  <p className="text-xs text-green-700 font-semibold flex items-center gap-1.5">
-                    <IconCheck /> Code validé — accès gratuit activé
-                  </p>
-                )}
+              {/* Ce que vous recevez */}
+              <div className="bg-terracotta/5 border border-terracotta/15 rounded-2xl p-4">
+                <p className="text-xs font-semibold text-text-primary mb-2.5">Votre analyse inclut :</p>
+                <ul className="space-y-1.5">
+                  {[
+                    'Un résumé en clair',
+                    'Les points importants à vérifier',
+                    'Les questions à poser',
+                    'Un message prêt à envoyer si pertinent',
+                    'Un PDF téléchargeable',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-sm text-text-primary">
+                      <span className="text-terracotta font-bold flex-shrink-0">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
+              {/* CTA principal ou gratuit */}
               {isFreeAccess ? (
                 <button onClick={() => handleAnalyze()} disabled={isLoading}
                   className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold text-base transition-all shadow-md">
@@ -973,23 +1013,35 @@ export default function Home() {
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-xs text-text-secondary text-center leading-relaxed bg-stone-50 border border-stone-200 rounded-xl px-4 py-3">
-                    Avant paiement, Lisible vérifie que votre document semble lisible et adapté à l'analyse.
-                  </p>
                   <button
                     onClick={handleStripeCheckout}
                     disabled={isCheckoutLoading}
                     className="w-full py-4 bg-terracotta hover:bg-terracotta-dark text-white rounded-2xl font-semibold text-base transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                     {isCheckoutLoading
                       ? <><IconSpinner /> Redirection vers le paiement…</>
-                      : <><IconLock /> Payer {cat.priceLabel} et analyser</>
+                      : <><IconLock /> Payer {cat.priceLabel} et lancer l'analyse</>
                     }
                   </button>
-                  <p className="text-xs text-text-secondary text-center flex items-center justify-center gap-1">
-                    <IconLock /> Paiement sécurisé via Stripe — documents supprimés après analyse
-                  </p>
+                  <div className="text-center space-y-1">
+                    <p className="text-xs text-text-secondary flex items-center justify-center gap-1">
+                      <IconLock /> Paiement sécurisé via Stripe.
+                    </p>
+                    <p className="text-xs text-text-secondary">Document original supprimé après analyse.</p>
+                  </div>
                 </div>
               )}
+
+              {/* Code d'accès — replié par défaut */}
+              <CodeAccesSection
+                accessCode={accessCode}
+                setAccessCode={setAccessCode}
+                accessCodeError={accessCodeError}
+                setAccessCodeError={setAccessCodeError}
+                isFreeAccess={isFreeAccess}
+                setIsFreeAccess={setIsFreeAccess}
+                handleApplyAccessCode={handleApplyAccessCode}
+              />
+
             </div>
           )}
 
