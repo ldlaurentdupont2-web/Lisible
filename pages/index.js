@@ -700,7 +700,7 @@ export default function Home() {
               {/* Hero */}
               <div className="text-center space-y-3">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta/10 rounded-full text-terracotta text-sm font-medium">
-                  <span>⚡</span><span>Sans abonnement · PDF inclus · Résultat immédiat</span>
+                  <span>⚡</span><span>Sans compte · Sans abonnement · PDF inclus</span>
                 </div>
                 <h1 className="text-3xl font-bold text-text-primary leading-tight">
                   Avant de paniquer,<br /><span className="text-terracotta">comprenez.</span>
@@ -709,7 +709,7 @@ export default function Home() {
                   Photo, PDF ou texte : recevez une explication claire de votre document, avec les points importants, les questions à poser et un PDF inclus.
                 </p>
                 <p className="text-sm font-semibold text-terracotta">
-                  Sans abonnement. Paiement unique de 1,99 €.
+                  Paiement unique de 1,99 €.
                 </p>
               </div>
 
@@ -723,10 +723,42 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bloc "Voir un exemple" */}
+              {/* CTA principal — juste après les cartes */}
+              <button onClick={() => selectedCategory && setStep(STEPS.UPLOAD)} disabled={!selectedCategory}
+                className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
+                  ${selectedCategory ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}>
+                {selectedCategory ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}` : 'Sélectionnez un type de document'}
+              </button>
+
+              {/* Bloc "Ce que vous recevez" */}
               <div className="bg-white rounded-2xl border border-border-soft p-5">
                 <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
-                  <span>👁️</span> Voir un exemple d'analyse
+                  <span>📦</span> Ce que vous recevez
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    'Un résumé en clair',
+                    'Les points importants à vérifier',
+                    'Les délais visibles',
+                    'Les questions à poser',
+                    'Les ressources utiles',
+                    'Un message prêt à envoyer si pertinent',
+                    'Un PDF téléchargeable',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-text-primary">
+                      <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Bloc "Voir des exemples d'analyse" */}
+              <div className="bg-white rounded-2xl border border-border-soft p-5">
+                <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
+                  <span>👁️</span> Voir des exemples d'analyse
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
                   {Object.values(EXAMPLES).map((ex) => (
@@ -744,54 +776,34 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bloc "Ce que vous recevez" */}
-              <div className="bg-white rounded-2xl border border-border-soft p-5">
-                <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
-                  <span>📦</span> Ce que vous recevez
-                </h3>
-                <ul className="space-y-2">
-                  {[
-                    'Un résumé simple du document',
-                    'Les points importants à vérifier',
-                    'Les délais visibles',
-                    'Les questions à poser',
-                    'Les ressources utiles',
-                    'Un PDF téléchargeable',
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-text-primary">
-                      <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      </span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* CTA */}
-              <button onClick={() => selectedCategory && setStep(STEPS.UPLOAD)} disabled={!selectedCategory}
-                className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
-                  ${selectedCategory ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}>
-                {selectedCategory ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}` : 'Sélectionnez un type de document'}
-              </button>
-
-              {/* Garanties */}
+              {/* Mini-processus en 3 étapes */}
               <div className="grid grid-cols-3 gap-3 text-center">
-                {[{ icon: '📸', label: 'Photo, PDF ou texte' }, { icon: '🔒', label: 'Données non stockées' }, { icon: '⚡', label: 'Résultat en 10 sec' }].map((item) => (
+                {[
+                  { icon: '📎', step: '1', label: 'Ajoutez le document' },
+                  { icon: '💳', step: '2', label: 'Validez le prix' },
+                  { icon: '✅', step: '3', label: 'Recevez l\'analyse' },
+                ].map((item) => (
                   <div key={item.label} className="bg-white rounded-xl p-3 border border-border-soft">
                     <div className="text-xl mb-1">{item.icon}</div>
+                    <div className="text-xs font-bold text-terracotta mb-0.5">{item.step}</div>
                     <div className="text-xs text-text-secondary font-medium leading-tight">{item.label}</div>
                   </div>
                 ))}
               </div>
 
+              {/* CTA secondaire */}
+              <button onClick={() => selectedCategory && setStep(STEPS.UPLOAD)} disabled={!selectedCategory}
+                className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
+                  ${selectedCategory ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}>
+                {selectedCategory ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}` : 'Sélectionnez un type de document'}
+              </button>
               {/* Disclaimer légal */}
               <div className="space-y-2">
                 <p className="text-xs text-text-secondary text-center leading-relaxed">
                   Lisible aide à comprendre un document. Il ne remplace pas un avocat, une administration, un service RH ou un professionnel qualifié.
                 </p>
                 <p className="text-xs text-text-secondary/70 text-center leading-relaxed">
-                  Analyse générée par IA, avec des prompts spécialisés et des limites clairement indiquées.
+                  Analyse générée par IA à partir de consignes spécialisées, avec des limites clairement indiquées.
                 </p>
               </div>
             </div>
@@ -961,6 +973,9 @@ export default function Home() {
                 </button>
               ) : (
                 <div className="space-y-3">
+                  <p className="text-xs text-text-secondary text-center leading-relaxed bg-stone-50 border border-stone-200 rounded-xl px-4 py-3">
+                    Avant paiement, Lisible vérifie que votre document semble lisible et adapté à l'analyse.
+                  </p>
                   <button
                     onClick={handleStripeCheckout}
                     disabled={isCheckoutLoading}
@@ -971,7 +986,7 @@ export default function Home() {
                     }
                   </button>
                   <p className="text-xs text-text-secondary text-center flex items-center justify-center gap-1">
-                    <IconLock /> Paiement sécurisé via Stripe — votre document n'est pas conservé
+                    <IconLock /> Paiement sécurisé via Stripe — documents supprimés après analyse
                   </p>
                 </div>
               )}
