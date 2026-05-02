@@ -47,6 +47,200 @@ const IconX = () => (
   </svg>
 )
 
+const IconExternalLink = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+)
+
+// ─── Données des exemples ──────────────────────────────────────────────────
+const EXAMPLES = {
+  administratif: {
+    label: 'Courrier administratif',
+    emoji: '🏛️',
+    docDescription: 'Notification de trop-perçu CAF — 347 €',
+    imageUrl: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=600&q=80',
+    imageAlt: 'Exemple de courrier administratif',
+    analysis: `## 📄 Ce que vous avez reçu
+
+Vous avez reçu une notification d'un organisme social vous informant d'un trop-perçu de **347 €** au titre des aides au logement versées entre janvier et mars. Cela signifie que l'organisme estime vous avoir versé davantage que ce à quoi vous aviez droit sur cette période.
+
+## 🎯 Ce que ça signifie concrètement
+
+Ce courrier vous demande de rembourser une somme qui a été versée en trop. Ce type de situation est fréquent et arrive souvent suite à un changement de situation non signalé (emploi, revenus, déménagement) ou à une régularisation annuelle. **Cela ne signifie pas que vous avez commis une fraude.**
+
+## ⏰ Délai à respecter
+
+Le courrier mentionne un délai de **20 jours** à compter de sa réception pour contester ou prendre contact. Passé ce délai, la retenue peut être effectuée directement sur vos prochaines allocations.
+
+## ✅ Ce que vous pouvez faire
+
+- **Vérifier** si le montant réclamé vous semble juste au regard de votre situation réelle
+- **Contacter** l'organisme pour demander un échelonnement si vous ne pouvez pas payer en une fois
+- **Contester** si vous pensez que le calcul est erroné, en envoyant un courrier motivé avec les justificatifs correspondants
+
+## 📞 Où obtenir de l'aide
+
+En cas de doute, **France Services** (guichet de proximité, gratuit) peut vous aider à rédiger une réponse ou à comprendre votre dossier.`,
+    questions: [
+      'Sur quelle période exacte porte ce trop-perçu ?',
+      'Comment l\'organisme a-t-il calculé ce montant ?',
+      'Est-il possible de le rembourser en plusieurs fois ?',
+      'Où envoyer ma contestation et sous quelle forme ?',
+    ],
+  },
+  paie: {
+    label: 'Bulletin de paie',
+    emoji: '💶',
+    docDescription: 'Bulletin de paie — Février 2024, secteur privé',
+    imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80',
+    imageAlt: 'Exemple de bulletin de paie',
+    analysis: `## 💶 Synthèse du bulletin
+
+Bulletin du mois de **février 2024**. Salarié non cadre, temps plein 35h.
+
+| | Montant |
+|---|---|
+| Salaire brut | 2 450,00 € |
+| Net avant impôt | 1 912,00 € |
+| Prélèvement à la source (8 %) | 153,00 € |
+| **Net à payer** | **1 759,00 €** |
+
+## 🔍 Les principales lignes expliquées
+
+**Cotisations salariales (538 €)** : Ce sont les contributions prélevées sur votre salaire brut pour financer la retraite, l'assurance chômage, la santé et la prévoyance. C'est normal et obligatoire.
+
+**Mutuelle entreprise (32 €)** : Part salariale de la mutuelle collective. Votre employeur en prend en charge au moins 50 % — la part patronale n'apparaît pas sur votre fiche.
+
+**Remboursement transport (37,50 €)** : Remboursement de 50 % de votre abonnement de transport en commun. Montant conforme à la règle légale.
+
+## ⚠️ Point à regarder de plus près
+
+Le ratio net/brut est de **78,2 %**, ce qui est dans la fourchette habituelle (75–80 % pour un non-cadre). Rien d'inhabituel à signaler sur ce bulletin.`,
+    questions: [
+      'Le nombre d\'heures supplémentaires est-il bien pris en compte ?',
+      'La mutuelle correspond-elle bien au contrat collectif en vigueur ?',
+      'Mon taux de prélèvement à la source est-il toujours à jour ?',
+      'Où trouver le détail des cotisations retraite complémentaire ?',
+    ],
+  },
+  bail: {
+    label: 'Bail locatif',
+    emoji: '🏠',
+    docDescription: 'Bail nu 3 ans — appartement T3, Paris 11e',
+    imageUrl: 'https://images.unsplash.com/photo-1460317442991-0ec209397118?w=600&q=80',
+    imageAlt: 'Exemple de bail locatif',
+    analysis: `## 🏠 Type de bail
+
+**Bail nu** — durée 3 ans, reconductible tacitement par périodes de 3 ans. Loi du 6 juillet 1989.
+
+## 💰 Loyer et charges
+
+- Loyer mensuel : **980 €**
+- Charges : **120 €** (provisions avec régularisation annuelle)
+- Dépôt de garantie : **980 €** (1 mois de loyer, conforme)
+- Révision : indexée sur l'IRL (Indice de Référence des Loyers)
+
+## ✅ Obligations principales
+
+**Locataire** : Payer le loyer à date fixe, entretenir le logement, souscrire une assurance habitation, respecter le voisinage.
+
+**Propriétaire** : Délivrer un logement décent, assurer les grosses réparations, remettre les quittances de loyer.
+
+## ⚠️ Clause à surveiller
+
+L'article 8 du bail indique **"interdiction formelle de détenir tout animal"**. Or, dans un bail nu, cette clause est considérée comme **potentiellement abusive** : un locataire peut légalement détenir des animaux domestiques non dangereux, sauf animaux de catégorie 1 ou 2. Ce point mérite vérification avant signature.
+
+## 📋 Points importants
+
+- Préavis de départ : **3 mois** (réduit à 1 mois en zone tendue)
+- État des lieux obligatoire à l'entrée et à la sortie
+- Assurance habitation obligatoire — justificatif à fournir chaque année`,
+    questions: [
+      'La clause interdisant les animaux est-elle applicable dans mon cas ?',
+      'Comment se calcule la régularisation annuelle des charges ?',
+      'Dans quels cas mon préavis peut-il être réduit à 1 mois ?',
+      'Que faire si le propriétaire ne restitue pas le dépôt de garantie à temps ?',
+    ],
+  },
+  contrat: {
+    label: 'Contrat de travail',
+    emoji: '📋',
+    docDescription: 'CDI — Chargé de clientèle, secteur services',
+    imageUrl: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&q=80',
+    imageAlt: 'Exemple de contrat de travail',
+    analysis: `## 📋 Type de contrat
+
+**CDI** — Contrat à durée indéterminée, temps plein 35h/semaine. Prise de poste : 1er mars 2024.
+
+## 🔑 Éléments clés
+
+| | |
+|---|---|
+| Période d'essai | 3 mois (renouvelable une fois) |
+| Salaire brut mensuel | 2 200 € |
+| Convention collective | Commerce de détail |
+| Lieu de travail | Paris — clause de mobilité absente |
+
+## 📌 Clauses analysées
+
+**Clause de confidentialité** *(normale)* : Couvre les informations clients et internes. Durée non précisée — standard dans ce secteur.
+
+**Clause de non-concurrence** *(à surveiller)* : Durée 12 mois, zone Île-de-France, secteur identique. La contrepartie financière est mentionnée (30 % du salaire mensuel brut). Ce point est important : **sans contrepartie, une clause de non-concurrence ne serait pas valable**. Ici elle est présente, ce qui est positif.
+
+**Variable sur objectifs** *(à surveiller)* : Une prime trimestrielle est prévue mais les critères sont renvoyés à "la politique commerciale en vigueur". Il serait utile d'en demander le détail par écrit avant signature.
+
+## ❓ Ce qui n'est pas visible
+
+La convention collective n'est pas jointe — elle peut prévoir des droits supplémentaires (primes, jours de congés, délais de préavis).`,
+    questions: [
+      'Quels sont exactement les critères de la prime variable ?',
+      'La convention collective prévoit-elle des avantages supplémentaires ?',
+      'Dans quelles conditions la période d\'essai peut-elle être renouvelée ?',
+      'Quelle est la durée de préavis en cas de démission après la période d\'essai ?',
+    ],
+  },
+  huissier: {
+    label: 'Courrier d\'huissier',
+    emoji: '⚖️',
+    docDescription: 'Commandement de payer — dette locative 1 240 €',
+    imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80',
+    imageAlt: 'Exemple de courrier d\'huissier',
+    analysis: `## ⚖️ Recevoir ce type de courrier peut inquiéter — prenons le temps de le comprendre ensemble.
+
+## Ce que c'est
+
+Vous avez reçu un **commandement de payer** signifié par un commissaire de justice. Il s'agit d'un acte officiel demandant le règlement d'une dette locative de **1 240 €** (2 mois de loyer impayés + frais).
+
+Ce n'est pas encore une expulsion. C'est une étape formelle qui précède une éventuelle procédure judiciaire.
+
+## ⏰ Délai important
+
+Le commandement mentionne un délai de **2 mois** pour régulariser la situation. Ce délai est **fixé par la loi** pour les dettes de loyer. Il court à compter de la date de signification indiquée sur l'acte.
+
+## ✅ Ce que vous pouvez faire
+
+- **Régler la totalité** de la somme si vous le pouvez
+- **Contacter directement le propriétaire ou son mandataire** pour proposer un calendrier de remboursement — obtenir tout accord **par écrit**
+- **Solliciter la CAF ou la MSA** si vous avez des aides au logement — elles peuvent dans certains cas verser directement au propriétaire
+- **Consulter un Point d'Accès au Droit** (gratuit) pour connaître vos options
+
+## ⚠️ Erreur fréquente à éviter
+
+Ne pas réagir dans le délai de 2 mois, en pensant que la situation va se régler d'elle-même. Le délai continue de courir indépendamment de votre situation.
+
+## 📞 Ressources gratuites
+
+**Point d'Accès au Droit (PAD)** — consultations gratuites en mairie · **ADIL** de votre département pour les questions locatives · **CCAS** de votre mairie pour un accompagnement social`,
+    questions: [
+      'Le montant réclamé correspond-il bien aux loyers impayés ?',
+      'Un accord amiable de paiement échelonné est-il possible ?',
+      'Que se passe-t-il si je ne peux pas payer dans les 2 mois ?',
+      'Puis-je contester ce commandement si je pense qu\'il y a une erreur ?',
+    ],
+  },
+}
+
 function CategoryCard({ cat, selected, onClick }) {
   return (
     <button onClick={onClick}
@@ -57,7 +251,10 @@ function CategoryCard({ cat, selected, onClick }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span className={`font-semibold text-sm ${selected ? 'text-terracotta' : 'text-text-primary'}`}>{cat.label}</span>
-            <span className={`text-sm font-bold whitespace-nowrap ${selected ? 'text-terracotta' : 'text-text-secondary'}`}>{cat.priceLabel}</span>
+            {/* Badge prix visible */}
+            <span className={`text-xs font-bold whitespace-nowrap px-2.5 py-1 rounded-full border ${selected ? 'bg-terracotta text-white border-terracotta' : 'bg-terracotta/10 text-terracotta border-terracotta/20'}`}>
+              {cat.priceLabel}
+            </span>
           </div>
           <p className="text-xs text-text-secondary mt-0.5 leading-snug">{cat.description}</p>
         </div>
@@ -68,6 +265,87 @@ function CategoryCard({ cat, selected, onClick }) {
         )}
       </div>
     </button>
+  )
+}
+
+// ─── Modal exemple ─────────────────────────────────────────────────────────
+function ExampleModal({ categoryId, onClose }) {
+  const ex = EXAMPLES[categoryId]
+  if (!ex) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full my-8" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-border-soft">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{ex.emoji}</span>
+            <div>
+              <p className="text-xs text-text-secondary font-medium">Exemple — {ex.label}</p>
+              <p className="font-semibold text-text-primary text-sm">{ex.docDescription}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 transition-colors">
+            <IconX />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Image faux document */}
+          <div>
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">Document analysé</p>
+            <div className="rounded-xl overflow-hidden border border-border-soft bg-stone-50">
+              <img src={ex.imageUrl} alt={ex.imageAlt} className="w-full h-40 object-cover opacity-80" />
+              <div className="px-4 py-2 bg-amber-50 border-t border-amber-100">
+                <p className="text-xs text-amber-700">📋 Document fictif à titre illustratif — les données sont inventées</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Analyse */}
+          <div>
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">Analyse Lisible</p>
+            <div className="bg-stone-50 rounded-xl p-4 text-sm text-text-primary leading-relaxed space-y-3 max-h-64 overflow-y-auto">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h2: ({ children }) => <h2 className="font-bold text-terracotta-dark text-sm mt-3 mb-1 first:mt-0">{children}</h2>,
+                  p: ({ children }) => <p className="text-sm leading-relaxed">{children}</p>,
+                  ul: ({ children }) => <ul className="space-y-1 ml-2">{children}</ul>,
+                  li: ({ children }) => <li className="flex gap-2 text-sm"><span className="text-terracotta flex-shrink-0">▸</span><span>{children}</span></li>,
+                  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                  table: ({ children }) => <table className="w-full text-xs border-collapse my-2">{children}</table>,
+                  th: ({ children }) => <th className="text-left px-2 py-1 bg-stone-100 border border-stone-200 text-xs">{children}</th>,
+                  td: ({ children }) => <td className="px-2 py-1 border border-stone-200 text-xs">{children}</td>,
+                }}
+              >{ex.analysis}</ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Questions */}
+          <div>
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">Questions suggérées</p>
+            <ul className="space-y-2">
+              {ex.questions.map((q, i) => (
+                <li key={i} className="flex gap-2 text-sm text-text-primary">
+                  <span className="text-terracotta font-bold flex-shrink-0">{i + 1}.</span>
+                  <span>{q}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* CTA */}
+          <div className="bg-terracotta/5 border border-terracotta/20 rounded-xl p-4 text-center space-y-2">
+            <p className="text-sm font-semibold text-text-primary">Vous avez un document de ce type ?</p>
+            <p className="text-xs text-text-secondary">Obtenez votre analyse personnalisée pour 1,99 €</p>
+            <button onClick={onClose} className="mt-1 px-5 py-2.5 bg-terracotta text-white rounded-xl text-sm font-semibold hover:bg-terracotta-dark transition-colors">
+              Analyser mon document →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -172,6 +450,7 @@ export default function Home() {
   const [isFollowUpLoading, setIsFollowUpLoading] = useState(false)
   const [followUpError, setFollowUpError] = useState('')
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
+  const [exampleModal, setExampleModal] = useState(null) // categoryId ou null
 
   const fileInputRef = useRef(null)
   const cat = selectedCategory ? CATEGORIES[selectedCategory] : null
@@ -201,7 +480,6 @@ export default function Home() {
     }
   }, [])
 
-  // ─── Analyse avec données passées en paramètre (pour retour Stripe) ────────
   const launchAnalysis = async (data) => {
     setIsLoading(true)
     setAnalysisError('')
@@ -238,7 +516,6 @@ export default function Home() {
     }
   }
 
-  // ─── Analyse standard (code gratuit) ─────────────────────────────────────
   const handleAnalyze = async () => {
     setIsLoading(true)
     setAnalysisError('')
@@ -277,11 +554,8 @@ export default function Home() {
     }
   }
 
-  // ─── Paiement Stripe ──────────────────────────────────────────────────────
   const handleStripeCheckout = async () => {
     setIsCheckoutLoading(true)
-    // Sauvegarder les données du document en sessionStorage
-    // pour les récupérer après le retour de Stripe
     localStorage.setItem('lisible_pending', JSON.stringify({
       category: selectedCategory,
       question: question.trim(),
@@ -380,12 +654,17 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Lisible — Comprendre vos documents en clair</title>
-        <meta name="description" content="Analysez vos courriers administratifs, bulletins de paie, baux, contrats et actes d'huissier en langage simple." />
+        <title>Lisible — Avant de paniquer, comprenez.</title>
+        <meta name="description" content="Analysez vos courriers administratifs, bulletins de paie, baux, contrats et actes d'huissier en langage simple. Paiement unique 1,99 €." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
+
+      {/* Modal exemple */}
+      {exampleModal && (
+        <ExampleModal categoryId={exampleModal} onClose={() => setExampleModal(null)} />
+      )}
 
       <div className="min-h-screen bg-beige" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <header className="border-b border-border-soft bg-white/80 backdrop-blur-sm sticky top-0 z-10 no-print">
@@ -414,21 +693,27 @@ export default function Home() {
 
         <main className="max-w-2xl mx-auto px-4 py-8">
 
-          {/* HOME */}
+          {/* ─── HOME ───────────────────────────────────────────────────────── */}
           {step === STEPS.HOME && (
             <div className="space-y-8">
+
+              {/* Hero */}
               <div className="text-center space-y-3">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-terracotta/10 rounded-full text-terracotta text-sm font-medium">
-                  <span>✨</span><span>Analyse par intelligence artificielle</span>
+                  <span>⚡</span><span>Sans abonnement · PDF inclus · Résultat immédiat</span>
                 </div>
                 <h1 className="text-3xl font-bold text-text-primary leading-tight">
-                  Comprenez vos documents<br /><span className="text-terracotta">en langage clair</span>
+                  Avant de paniquer,<br /><span className="text-terracotta">comprenez.</span>
                 </h1>
                 <p className="text-text-secondary text-base leading-relaxed max-w-md mx-auto">
-                  Photo, PDF ou texte — recevez une analyse simple, rassurante et actionnable en quelques secondes.
+                  Photo, PDF ou texte : recevez une explication claire de votre document, avec les points importants, les questions à poser et un PDF inclus.
+                </p>
+                <p className="text-sm font-semibold text-terracotta">
+                  Sans abonnement. Paiement unique de 1,99 €.
                 </p>
               </div>
 
+              {/* Sélection catégorie */}
               <div>
                 <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">Choisissez le type de document</h2>
                 <div className="space-y-2.5">
@@ -438,12 +723,59 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Bloc "Voir un exemple" */}
+              <div className="bg-white rounded-2xl border border-border-soft p-5">
+                <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
+                  <span>👁️</span> Voir un exemple d'analyse
+                </h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {Object.values(EXAMPLES).map((ex) => (
+                    <button key={ex.label} onClick={() => setExampleModal(Object.keys(EXAMPLES).find(k => EXAMPLES[k] === ex))}
+                      className="flex items-center gap-3 text-left px-3 py-2.5 rounded-xl hover:bg-stone-50 transition-colors group">
+                      <span className="text-lg">{ex.emoji}</span>
+                      <span className="text-sm text-text-primary group-hover:text-terracotta transition-colors flex-1">
+                        Exemple {ex.label.toLowerCase()}
+                      </span>
+                      <span className="text-text-secondary group-hover:text-terracotta transition-colors">
+                        <IconExternalLink />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bloc "Ce que vous recevez" */}
+              <div className="bg-white rounded-2xl border border-border-soft p-5">
+                <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
+                  <span>📦</span> Ce que vous recevez
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    'Un résumé simple du document',
+                    'Les points importants à vérifier',
+                    'Les délais visibles',
+                    'Les questions à poser',
+                    'Les ressources utiles',
+                    'Un PDF téléchargeable',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-text-primary">
+                      <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* CTA */}
               <button onClick={() => selectedCategory && setStep(STEPS.UPLOAD)} disabled={!selectedCategory}
                 className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
                   ${selectedCategory ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}>
                 {selectedCategory ? `Analyser mon document — ${CATEGORIES[selectedCategory].priceLabel}` : 'Sélectionnez un type de document'}
               </button>
 
+              {/* Garanties */}
               <div className="grid grid-cols-3 gap-3 text-center">
                 {[{ icon: '📸', label: 'Photo, PDF ou texte' }, { icon: '🔒', label: 'Données non stockées' }, { icon: '⚡', label: 'Résultat en 10 sec' }].map((item) => (
                   <div key={item.label} className="bg-white rounded-xl p-3 border border-border-soft">
@@ -453,13 +785,19 @@ export default function Home() {
                 ))}
               </div>
 
-              <p className="text-xs text-text-secondary text-center leading-relaxed">
-                Lisible est un outil d'aide à la compréhension. Il ne constitue pas un conseil juridique ou administratif personnalisé.
-              </p>
+              {/* Disclaimer légal */}
+              <div className="space-y-2">
+                <p className="text-xs text-text-secondary text-center leading-relaxed">
+                  Lisible aide à comprendre un document. Il ne remplace pas un avocat, une administration, un service RH ou un professionnel qualifié.
+                </p>
+                <p className="text-xs text-text-secondary/70 text-center leading-relaxed">
+                  Analyse générée par IA, avec des prompts spécialisés et des limites clairement indiquées.
+                </p>
+              </div>
             </div>
           )}
 
-          {/* UPLOAD */}
+          {/* ─── UPLOAD ─────────────────────────────────────────────────────── */}
           {step === STEPS.UPLOAD && cat && (
             <div className="space-y-6">
               <div>
@@ -553,21 +891,43 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAYMENT */}
+          {/* ─── PAYMENT ────────────────────────────────────────────────────── */}
           {step === STEPS.PAYMENT && cat && (
             <div className="space-y-6">
-              <div className="card p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">{cat.emoji}</span>
-                  <div>
-                    <h2 className="font-bold text-text-primary">{cat.label}</h2>
-                    <p className="text-sm text-text-secondary">Analyse complète + 1 question de suivi incluse</p>
+
+              {/* Mini-diagnostic */}
+              <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 space-y-3">
+                <h3 className="font-semibold text-text-primary text-sm flex items-center gap-2">
+                  <span>🔍</span> Avant de payer
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-secondary">Document sélectionné</span>
+                    <span className="font-medium text-text-primary">{cat.emoji} {cat.label}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-secondary">Format</span>
+                    <span className="font-medium text-text-primary">
+                      {inputMode === INPUT_MODES.FILE
+                        ? (uploadedFile?.fileType === 'image' ? '🖼️ Image' : '📄 PDF')
+                        : '✏️ Texte collé'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-secondary">Analyse proposée</span>
+                    <span className="font-medium text-text-primary">Analyse complète + 1 question de suivi</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm border-t border-stone-200 pt-2 mt-2">
+                    <span className="font-semibold text-text-primary">Prix</span>
+                    <span className="font-bold text-terracotta text-base">{cat.priceLabel}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between py-3 border-t border-border-soft">
-                  <span className="text-sm text-text-secondary">Total</span>
-                  <span className="text-xl font-bold text-terracotta">{cat.priceLabel}</span>
-                </div>
+                {question && (
+                  <div className="bg-white rounded-xl px-3 py-2.5 border border-border-soft">
+                    <p className="text-xs text-text-secondary mb-0.5">Votre question</p>
+                    <p className="text-sm text-text-primary italic">"{question}"</p>
+                  </div>
+                )}
               </div>
 
               {analysisError && (
@@ -618,7 +978,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* LOADING */}
+          {/* ─── LOADING ─────────────────────────────────────────────────────── */}
           {step === STEPS.LOADING && (
             <div className="flex flex-col items-center justify-center py-20 space-y-6">
               <div className="relative">
@@ -637,7 +997,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* RESULT */}
+          {/* ─── RESULT ──────────────────────────────────────────────────────── */}
           {step === STEPS.RESULT && (
             <div className="space-y-6">
               <div className="flex items-start justify-between gap-3">
@@ -702,9 +1062,19 @@ export default function Home() {
 
         </main>
 
-        <footer className="border-t border-border-soft py-6 mt-8 no-print">
-          <div className="max-w-2xl mx-auto px-4 text-center">
-            <p className="text-xs text-text-secondary">© 2024 Lisible — Aide à la compréhension de documents français</p>
+        {/* ─── FOOTER ──────────────────────────────────────────────────────── */}
+        <footer className="border-t border-border-soft py-8 mt-8 no-print">
+          <div className="max-w-2xl mx-auto px-4 space-y-4 text-center">
+            <p className="text-xs text-text-secondary">
+              Pour toute question technique, problème de paiement ou demande liée à vos données :{' '}
+              <a href="mailto:contact@lisible.fr" className="text-terracotta hover:underline font-medium">contact@lisible.fr</a>
+            </p>
+            <p className="text-xs text-text-secondary">
+              © 2024 Lisible — Aide à la compréhension de documents français
+            </p>
+            <p className="text-xs text-text-secondary/60">
+              Lisible aide à comprendre un document. Il ne remplace pas un avocat, une administration, un service RH ou un professionnel qualifié.
+            </p>
           </div>
         </footer>
       </div>
