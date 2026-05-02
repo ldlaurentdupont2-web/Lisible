@@ -493,11 +493,23 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const urlParams = new URLSearchParams(window.location.search)
     const paid = urlParams.get('paid') || localStorage.getItem('lisible_paid')
-    const pendingRaw = localStorage.getItem('lisible_pending')
-    if (paid === '1' && pendingRaw) {
+    // Essai localStorage d'abord, puis sessionStorage en fallback
+    const pendingRaw = localStorage.getItem('lisible_pending') || sessionStorage.getItem('lisible_pending')
+
+    if (paid === '1') {
       window.history.replaceState({}, '', '/')
       localStorage.removeItem('lisible_paid')
+
+      if (!pendingRaw) {
+        // Les données ont été perdues pendant la navigation Stripe
+        setStep(STEPS.HOME)
+        alert('Votre paiement a bien été reçu, mais vos données de document ont été perdues lors de la redirection. Merci de recharger votre document. Contactez contact@lisible.fr avec votre reçu Stripe si besoin.')
+        return
+      }
+
       localStorage.removeItem('lisible_pending')
+      sessionStorage.removeItem('lisible_pending')
+
       try {
         const data = JSON.parse(pendingRaw)
         setSelectedCategory(data.category)
@@ -589,7 +601,7 @@ export default function Home() {
 
   const handleStripeCheckout = async () => {
     setIsCheckoutLoading(true)
-    localStorage.setItem('lisible_pending', JSON.stringify({
+    const pendingPayload = JSON.stringify({
       category: selectedCategory,
       question: question.trim(),
       inputMode,
@@ -601,7 +613,9 @@ export default function Home() {
         name: uploadedFile.name,
         size: uploadedFile.size,
       } : null,
-    }))
+    })
+    localStorage.setItem('lisible_pending', pendingPayload)
+    sessionStorage.setItem('lisible_pending', pendingPayload)
     try {
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
