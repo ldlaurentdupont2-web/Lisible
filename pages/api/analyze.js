@@ -6,7 +6,7 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-const CONCISION_NOTE = '\n\nCONSIGNE : Sois concis et complet. Maximum 3-4 phrases par section, 800 mots au total. Termine toujours ton analyse en entier.'
+const CONCISION_NOTE = ''
 
 export const config = {
   api: {
