@@ -704,7 +704,7 @@ function CategoryCard({ cat, selected, onClick }) {
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
-const STEPS = { HOME: 'home', UPLOAD: 'upload', PAYMENT: 'payment', LOADING: 'loading', RESULT: 'result' }
+const STEPS = { HOME: 'home', UPLOAD: 'upload', CHECKING: 'checking', PAYMENT: 'payment', LOADING: 'loading', RESULT: 'result' }
 const INPUT_MODES = { FILE: 'file', TEXT: 'text' }
 const ACCEPTED_TYPES = {
   'application/pdf': 'pdf',
@@ -849,6 +849,34 @@ export default function Home() {
   const handleDrop = (e) => { e.preventDefault(); const file = e.dataTransfer.files[0]; if (file) handleFileChange({ target: { files: [file] } }) }
   const canContinue = inputMode === INPUT_MODES.FILE ? uploadedFile !== null : documentText.trim().length >= 20
 
+  // ─── Precheck ─────────────────────────────────────────────────────────────
+  const [precheckResult, setPrecheckResult] = useState(null) // { lisible, bonne_categorie, type_detecte, message }
+  const [isChecking, setIsChecking] = useState(false)
+
+  const handlePrecheck = async () => {
+    setIsChecking(true)
+    setPrecheckResult(null)
+    setStep(STEPS.CHECKING)
+    try {
+      const body = { category: selectedCategory, isPrecheck: true }
+      if (inputMode === INPUT_MODES.FILE && uploadedFile) {
+        if (uploadedFile.fileType === 'image') { body.imageBase64 = uploadedFile.base64; body.imageMediaType = uploadedFile.type }
+        else body.pdfBase64 = uploadedFile.base64
+      } else {
+        body.documentText = documentText.trim()
+      }
+      const res = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      const data = await res.json()
+      if (!res.ok) throw new Error('Erreur de vérification.')
+      setPrecheckResult(data.precheck)
+    } catch {
+      // En cas d'erreur réseau, on laisse passer vers PAYMENT
+      setPrecheckResult({ lisible: 'oui', bonne_categorie: 'incertain', message: 'Vérification impossible — vous pouvez continuer.' })
+    } finally {
+      setIsChecking(false)
+    }
+  }
+
   const handleApplyAccessCode = () => {
     const code = accessCode.toUpperCase().trim()
     if (FREE_CODES.includes(code)) { setIsFreeAccess(true); setAccessCodeError('') }
@@ -882,7 +910,7 @@ export default function Home() {
     setAccessCode(''); setAccessCodeError(''); setIsFreeAccess(false)
     setAnalysisRaw(null); setAnalysisError('')
     setFollowUpQuestion(''); setFollowUpAnswer(''); setFollowUpUsed(false); setFollowUpError('')
-    setIsCheckoutLoading(false)
+    setIsCheckoutLoading(false); setPrecheckResult(null)
   }
 
   const parsedFollowUp = parseAnalysis(followUpAnswer)
@@ -906,7 +934,7 @@ export default function Home() {
               <span className="text-2xl">📖</span>
               <span className="font-bold text-lg text-text-primary group-hover:text-terracotta transition-colors">Lisible</span>
             </button>
-            {step !== STEPS.HOME && step !== STEPS.LOADING && (
+            {step !== STEPS.HOME && step !== STEPS.LOADING && step !== STEPS.CHECKING && (
               <button onClick={step === STEPS.RESULT ? handleReset : () => {
                 if (step === STEPS.UPLOAD) setStep(STEPS.HOME)
                 if (step === STEPS.PAYMENT) setStep(STEPS.UPLOAD)
@@ -918,7 +946,7 @@ export default function Home() {
         </header>
 
         {/* Progress bar */}
-        {step !== STEPS.HOME && step !== STEPS.LOADING && (
+        {step !== STEPS.HOME && step !== STEPS.LOADING && step !== STEPS.CHECKING && (
           <div className="h-1 bg-border-soft no-print">
             <div className="h-full bg-terracotta transition-all duration-500"
               style={{ width: step === STEPS.UPLOAD ? '33%' : step === STEPS.PAYMENT ? '66%' : '100%' }} />
@@ -1106,11 +1134,128 @@ export default function Home() {
                   className="w-full px-4 py-3 bg-white border-2 border-border-soft rounded-xl text-sm text-text-primary placeholder-text-secondary/50 focus:outline-none focus:border-terracotta transition-colors" />
               </div>
 
-              <button onClick={() => setStep(STEPS.PAYMENT)} disabled={!canContinue}
+              <button onClick={handlePrecheck} disabled={!canContinue}
                 className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-200
                   ${canContinue ? 'bg-terracotta text-white shadow-md hover:bg-terracotta-dark' : 'bg-border-soft text-text-secondary cursor-not-allowed'}`}>
                 Continuer →
               </button>
+            </div>
+          )}
+
+          {/* ─── CHECKING ───────────────────────────────────────────────────── */}
+          {step === STEPS.CHECKING && (
+            <div className="space-y-6">
+
+              {/* En cours de vérification */}
+              {isChecking && (
+                <div className="flex flex-col items-center justify-center py-20 space-y-6">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-full border-4 border-terracotta/20 border-t-terracotta animate-spin" />
+                    <span className="absolute inset-0 flex items-center justify-center text-2xl">🔍</span>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="font-semibold text-text-primary">Vérification du document…</p>
+                    <p className="text-sm text-text-secondary">Quelques secondes pour s'assurer que l'analyse sera possible.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Résultat precheck — document illisible */}
+              {!isChecking && precheckResult?.lisible === 'non' && (
+                <div className="space-y-5">
+                  <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 text-center space-y-3">
+                    <div className="text-4xl">😕</div>
+                    <h2 className="font-bold text-lg text-text-primary">Document illisible</h2>
+                    <p className="text-sm text-text-secondary leading-relaxed">
+                      {precheckResult.message || "Votre document n'est pas suffisamment lisible pour être analysé correctement."}
+                    </p>
+                    <div className="bg-white rounded-xl p-4 border border-red-100 text-left space-y-2">
+                      <p className="text-xs font-semibold text-text-primary">Pour obtenir une bonne analyse :</p>
+                      <ul className="space-y-1.5">
+                        {['Prenez la photo en bonne lumière, sans reflet', 'Assurez-vous que tout le texte est visible et net', 'Si c\'est un PDF, vérifiez qu\'il s\'ouvre correctement', 'Vous pouvez aussi coller le texte directement'].map(tip => (
+                          <li key={tip} className="flex gap-2 text-xs text-text-secondary">
+                            <span className="text-terracotta flex-shrink-0">▸</span>{tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <button onClick={() => setStep(STEPS.UPLOAD)}
+                    className="w-full py-4 rounded-2xl border-2 border-terracotta text-terracotta font-semibold text-base hover:bg-terracotta/5 transition-all">
+                    ← Déposer un autre document
+                  </button>
+                </div>
+              )}
+
+              {/* Résultat precheck — mauvaise catégorie */}
+              {!isChecking && precheckResult?.lisible !== 'non' && precheckResult?.bonne_categorie === 'non' && (
+                <div className="space-y-5">
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 text-center space-y-3">
+                    <div className="text-4xl">🤔</div>
+                    <h2 className="font-bold text-lg text-text-primary">Ce document ne correspond pas à la catégorie</h2>
+                    <p className="text-sm text-text-secondary leading-relaxed">
+                      {precheckResult.message || "Le document semble être d'un autre type que celui sélectionné."}
+                    </p>
+                    {precheckResult.type_detecte && (
+                      <div className="bg-white rounded-xl px-4 py-3 border border-amber-100 inline-block">
+                        <p className="text-xs text-text-secondary">Type détecté</p>
+                        <p className="text-sm font-semibold text-text-primary mt-0.5">{precheckResult.type_detecte}</p>
+                      </div>
+                    )}
+                    <p className="text-xs text-text-secondary">Vous n'êtes pas facturé(e) — aucun paiement n'a été demandé.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={() => setStep(STEPS.UPLOAD)}
+                      className="py-3.5 rounded-2xl border-2 border-border-soft text-text-secondary font-semibold text-sm hover:border-terracotta hover:text-terracotta transition-all">
+                      ← Changer de document
+                    </button>
+                    <button onClick={() => { setStep(STEPS.HOME); setSelectedCategory(null) }}
+                      className="py-3.5 rounded-2xl border-2 border-terracotta text-terracotta font-semibold text-sm hover:bg-terracotta/5 transition-all">
+                      Changer de catégorie
+                    </button>
+                  </div>
+                  {/* Escape hatch : l'utilisateur peut forcer la suite s'il pense que Claude a tort */}
+                  <button onClick={() => setStep(STEPS.PAYMENT)}
+                    className="w-full text-xs text-text-secondary hover:text-terracotta transition-colors py-2 underline underline-offset-2">
+                    Continuer quand même avec cette catégorie →
+                  </button>
+                </div>
+              )}
+
+              {/* Résultat precheck — OK ou incertain → continuer vers paiement */}
+              {!isChecking && precheckResult && precheckResult.lisible !== 'non' && precheckResult.bonne_categorie !== 'non' && (
+                <div className="space-y-5">
+                  <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">✅</span>
+                      <div>
+                        <p className="font-semibold text-green-800 text-sm">Document vérifié</p>
+                        <p className="text-xs text-green-600 mt-0.5">{precheckResult.message || 'Votre document est lisible et correspond à la catégorie.'}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <div className="bg-white rounded-xl px-3 py-2 border border-green-100">
+                        <p className="text-xs text-text-secondary">Lisibilité</p>
+                        <p className="text-sm font-semibold text-text-primary capitalize">{precheckResult.lisible === 'partiellement' ? '⚠ Partielle' : '✓ Bonne'}</p>
+                      </div>
+                      <div className="bg-white rounded-xl px-3 py-2 border border-green-100">
+                        <p className="text-xs text-text-secondary">Catégorie</p>
+                        <p className="text-sm font-semibold text-text-primary">{precheckResult.bonne_categorie === 'incertain' ? '~ À confirmer' : `✓ ${cat?.label}`}</p>
+                      </div>
+                    </div>
+                    {precheckResult.lisible === 'partiellement' && (
+                      <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 border border-amber-100">
+                        ⚠ Certaines parties du document sont peu lisibles — l'analyse sera partielle sur ces zones.
+                      </p>
+                    )}
+                  </div>
+                  <button onClick={() => setStep(STEPS.PAYMENT)}
+                    className="w-full py-4 bg-terracotta text-white rounded-2xl font-semibold text-base shadow-md hover:bg-terracotta-dark transition-all">
+                    Continuer vers le paiement — {cat?.priceLabel}
+                  </button>
+                </div>
+              )}
+
             </div>
           )}
 
