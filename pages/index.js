@@ -1028,23 +1028,38 @@ export default function Home() {
                 </ul>
               </div>
 
-              {/* Voir des exemples */}
-              <div className="bg-white rounded-2xl border border-border-soft p-5">
-                <h3 className="font-semibold text-text-primary text-sm mb-3 flex items-center gap-2">
-                  <span>👁️</span> Voir des exemples d'analyse
-                </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {Object.entries(EXAMPLES).map(([key, ex]) => (
-                    <button key={key} onClick={() => setExampleModal(key)}
-                      className="flex items-center gap-3 text-left px-3 py-2.5 rounded-xl hover:bg-stone-50 transition-colors group">
-                      <span className="text-lg">{ex.emoji}</span>
-                      <span className="text-sm text-text-primary group-hover:text-terracotta transition-colors flex-1">
-                        Exemple {ex.label.toLowerCase()}
-                      </span>
-                      <span className="text-text-secondary group-hover:text-terracotta transition-colors"><IconExternalLink /></span>
-                    </button>
-                  ))}
+              {/* Voir un exemple */}
+              <div className="bg-white rounded-2xl border border-border-soft overflow-hidden">
+                <div className="px-5 pt-5 pb-3">
+                  <h3 className="font-semibold text-text-primary text-sm flex items-center gap-2">
+                    <span>👁️</span> Voir un exemple d'analyse
+                  </h3>
                 </div>
+                <button onClick={() => setExampleModal('administratif')}
+                  className="w-full text-left hover:bg-stone-50 transition-colors group">
+                  <div className="mx-5 mb-4 rounded-xl border border-border-soft overflow-hidden">
+                    {/* Miniature PDF */}
+                    <div className="relative bg-stone-100 h-28 overflow-hidden">
+                      <iframe
+                        src="/courrier_caf_exemple.pdf"
+                        className="w-full h-full pointer-events-none"
+                        style={{ transform: 'scale(0.6)', transformOrigin: 'top left', width: '167%', height: '167%' }}
+                        title="Aperçu courrier CAF"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-stone-100/60" />
+                    </div>
+                    {/* Info + CTA */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-terracotta/5 border-t border-terracotta/15">
+                      <div>
+                        <p className="text-xs font-semibold text-text-primary">🏛️ Courrier CAF — Trop-perçu 347 €</p>
+                        <p className="text-xs text-text-secondary mt-0.5">Document + analyse complète</p>
+                      </div>
+                      <span className="flex items-center gap-1 text-xs font-semibold text-terracotta group-hover:underline">
+                        Voir l'exemple <IconExternalLink />
+                      </span>
+                    </div>
+                  </div>
+                </button>
               </div>
 
               {/* Mini processus */}
