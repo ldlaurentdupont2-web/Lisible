@@ -1167,7 +1167,7 @@ export default function Home() {
                     <div className="text-4xl">😕</div>
                     <h2 className="font-bold text-lg text-text-primary">Document illisible</h2>
                     <p className="text-sm text-text-secondary leading-relaxed">
-                      {precheckResult.message || "Votre document n'est pas suffisamment lisible pour être analysé correctement."}
+                      Votre document n'est pas suffisamment lisible pour être analysé. Voici comment y remédier :
                     </p>
                     <div className="bg-white rounded-xl p-4 border border-red-100 text-left space-y-2">
                       <p className="text-xs font-semibold text-text-primary">Pour obtenir une bonne analyse :</p>
@@ -1192,9 +1192,9 @@ export default function Home() {
                 <div className="space-y-5">
                   <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 text-center space-y-3">
                     <div className="text-4xl">🤔</div>
-                    <h2 className="font-bold text-lg text-text-primary">Ce document ne correspond pas à la catégorie</h2>
+                    <h2 className="font-bold text-lg text-text-primary">Ce document ne semble pas correspondre à la catégorie choisie</h2>
                     <p className="text-sm text-text-secondary leading-relaxed">
-                      {precheckResult.message || "Le document semble être d'un autre type que celui sélectionné."}
+                      Vérifiez que vous avez sélectionné le bon type de document, ou déposez un autre fichier.
                     </p>
                     {precheckResult.type_detecte && (
                       <div className="bg-white rounded-xl px-4 py-3 border border-amber-100 inline-block">
