@@ -494,8 +494,6 @@ export default function Home() {
     const urlParams = new URLSearchParams(window.location.search)
     const paid = urlParams.get('paid') || localStorage.getItem('lisible_paid')
     const pendingRaw = localStorage.getItem('lisible_pending')
-    console.log('[Lisible] paid:', paid, '| pendingRaw:', pendingRaw ? 'PRESENT (' + pendingRaw.length + ' chars)' : 'NULL')
-    console.log('[Lisible] all localStorage keys:', Object.keys(localStorage))
     if (paid === '1' && pendingRaw) {
       window.history.replaceState({}, '', '/')
       localStorage.removeItem('lisible_paid')
