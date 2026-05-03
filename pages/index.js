@@ -1477,7 +1477,7 @@ export default function Home() {
           <div className="max-w-2xl mx-auto px-4 space-y-4 text-center">
             <p className="text-xs text-text-secondary">
               Pour toute question technique, problème de paiement ou demande liée à vos données :{' '}
-              <a href="mailto:contact@lisible.fr" className="text-terracotta hover:underline font-medium">contact@lisible.fr</a>
+              <a href="mailto:contact@lisible.eu" className="text-terracotta hover:underline font-medium">contact@lisible.eu</a>
             </p>
             <p className="text-xs text-text-secondary">© 2025 Lisible — Aide à la compréhension de documents français</p>
             <p className="text-xs text-text-secondary/60">
