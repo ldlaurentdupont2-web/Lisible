@@ -712,9 +712,12 @@ function CategoryCard({ cat, selected, onClick }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span className={`font-semibold text-sm ${selected ? 'text-terracotta' : 'text-text-primary'}`}>{cat.label}</span>
-            <span className={`text-xs font-bold whitespace-nowrap px-2.5 py-1 rounded-full border ${selected ? 'bg-terracotta text-white border-terracotta' : 'bg-terracotta/10 text-terracotta border-terracotta/20'}`}>
-              {cat.priceLabel}
-            </span>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <span className="text-xs text-text-secondary line-through">4,99 €</span>
+              <span className={`text-xs font-bold whitespace-nowrap px-2.5 py-1 rounded-full border ${selected ? 'bg-terracotta text-white border-terracotta' : 'bg-terracotta/10 text-terracotta border-terracotta/20'}`}>
+                {cat.priceLabel}
+              </span>
+            </div>
           </div>
           <p className="text-xs text-text-secondary mt-0.5 leading-snug">{cat.description}</p>
         </div>
@@ -993,7 +996,9 @@ export default function Home() {
                 <p className="text-text-secondary text-base leading-relaxed max-w-md mx-auto">
                   Photo, PDF ou texte : recevez une explication claire de votre document, avec les points importants, les questions à poser et un PDF inclus.
                 </p>
-                <p className="text-sm font-semibold text-terracotta">Paiement unique de 1,99 €.</p>
+                <p className="text-sm font-semibold text-terracotta">
+                  🏷️ Prix de lancement : 1,99 € <span className="font-normal text-text-secondary line-through">4,99 €</span>
+                </p>
               </div>
 
               <div>
