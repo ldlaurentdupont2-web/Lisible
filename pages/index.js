@@ -946,9 +946,33 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Lisible — Avant de paniquer, comprenez.</title>
-        <meta name="description" content="Analysez vos courriers administratifs, bulletins de paie, baux, contrats et actes d'huissier en langage simple. Paiement unique 1,99 €." />
+        <title>Lisible — Comprenez vos documents administratifs en langage simple</title>
+        <meta name="description" content="Courrier CAF, bulletin de paie, bail, contrat de travail, huissier : Lisible vous explique tout clairement en quelques secondes. Sans compte, 1,99 €." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href="https://lisible.eu" />
+
+        {/* Open Graph — pour Facebook et WhatsApp */}
+        <meta property="og:title" content="Lisible — Comprenez vos documents en langage simple" />
+        <meta property="og:description" content="Courrier administratif, bulletin de paie, bail, contrat, huissier : une explication claire en quelques secondes. 1,99 €." />
+        <meta property="og:url" content="https://lisible.eu" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="fr_FR" />
+
+        {/* Schema.org */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Lisible",
+          "url": "https://lisible.eu",
+          "description": "Analyse de documents administratifs et juridiques français en langage simple",
+          "applicationCategory": "BusinessApplication",
+          "inLanguage": "fr",
+          "offers": {
+            "@type": "Offer",
+            "price": "1.99",
+            "priceCurrency": "EUR"
+          }
+        })}} />
       </Head>
 
       {exampleModal && <ExampleModal categoryId={exampleModal} onClose={() => setExampleModal(null)} />}
