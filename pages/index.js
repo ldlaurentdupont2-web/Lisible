@@ -962,6 +962,11 @@ export default function Home() {
               <span className="text-2xl">📖</span>
               <span className="font-bold text-lg text-text-primary group-hover:text-terracotta transition-colors">Lisible</span>
             </button>
+            {step === STEPS.HOME && (
+              <a href="/blog/trop-percu-caf" className="text-sm text-text-secondary hover:text-terracotta transition-colors font-medium">
+                Blog
+              </a>
+            )}
             {step !== STEPS.HOME && step !== STEPS.LOADING && step !== STEPS.CHECKING && (
               <button onClick={step === STEPS.RESULT ? handleReset : () => {
                 if (step === STEPS.UPLOAD) setStep(STEPS.HOME)
@@ -1091,6 +1096,23 @@ export default function Home() {
                 <p className="text-xs text-text-secondary/70 text-center leading-relaxed">
                   Analyse générée par IA, avec des prompts spécialisés et des limites clairement indiquées.
                 </p>
+              </div>
+
+              {/* Section Blog */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">Guides pratiques</h3>
+                <a href="/blog/trop-percu-caf" className="flex items-start gap-4 bg-white border border-border-soft rounded-2xl p-4 hover:border-terracotta/30 hover:shadow-sm transition-all group">
+                  <span className="text-2xl flex-shrink-0">🏛️</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-text-primary group-hover:text-terracotta transition-colors leading-snug">
+                      Trop-perçu CAF : que faire quand vous recevez cette lettre ?
+                    </p>
+                    <p className="text-xs text-text-secondary mt-1 leading-relaxed">
+                      Ce que ça veut dire, vos options, les erreurs à éviter et où trouver de l'aide gratuitement.
+                    </p>
+                  </div>
+                  <span className="text-terracotta flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                </a>
               </div>
             </div>
           )}
@@ -1479,12 +1501,6 @@ export default function Home() {
               Pour toute question technique, problème de paiement ou demande liée à vos données :{' '}
               <a href="mailto:contact@lisible.eu" className="text-terracotta hover:underline font-medium">contact@lisible.eu</a>
             </p>
-            <div className="flex justify-center flex-wrap gap-4 text-xs text-text-secondary">
-              <a href="/blog/trop-percu-caf" className="hover:text-terracotta transition-colors">Blog</a>
-              <a href="/mentions-legales" className="hover:text-terracotta transition-colors">Mentions légales</a>
-              <a href="/cgv" className="hover:text-terracotta transition-colors">CGV</a>
-              <a href="/a-propos" className="hover:text-terracotta transition-colors">À propos</a>
-            </div>
             <p className="text-xs text-text-secondary">© 2025 Lisible — Aide à la compréhension de documents français</p>
             <p className="text-xs text-text-secondary/60">
               Lisible aide à comprendre un document. Il ne remplace pas un avocat, une administration, un service RH ou un professionnel qualifié.
