@@ -1479,7 +1479,8 @@ export default function Home() {
               Pour toute question technique, problème de paiement ou demande liée à vos données :{' '}
               <a href="mailto:contact@lisible.eu" className="text-terracotta hover:underline font-medium">contact@lisible.eu</a>
             </p>
-            <div className="flex justify-center gap-6 text-xs text-text-secondary">
+            <div className="flex justify-center flex-wrap gap-4 text-xs text-text-secondary">
+              <a href="/blog/trop-percu-caf" className="hover:text-terracotta transition-colors">Blog</a>
               <a href="/mentions-legales" className="hover:text-terracotta transition-colors">Mentions légales</a>
               <a href="/cgv" className="hover:text-terracotta transition-colors">CGV</a>
               <a href="/a-propos" className="hover:text-terracotta transition-colors">À propos</a>

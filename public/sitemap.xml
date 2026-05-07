@@ -8,6 +8,26 @@
   <url>
     <loc>https://lisible.eu/success</loc>
     <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://lisible.eu/a-propos</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://lisible.eu/mentions-legales</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://lisible.eu/cgv</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://lisible.eu/blog/trop-percu-caf</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>
