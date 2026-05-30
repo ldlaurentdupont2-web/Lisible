@@ -26,6 +26,22 @@ const articles = [
     description: "Loyer, charges, dépôt de garantie, préavis, clauses abusives : tout ce qu'il faut vérifier.",
     date: "14 mai 2025",
   },
+  {
+    slug: "contrat-de-travail",
+    emoji: "📋",
+    categorie: "Contrat de travail",
+    titre: "Contrat de travail : ce qu'il faut vérifier avant de signer",
+    description: "Période d'essai, salaire, clause de non-concurrence, mobilité et préavis : les points essentiels.",
+    date: "14 mai 2025",
+  },
+  {
+    slug: "courrier-huissier",
+    emoji: "⚖️",
+    categorie: "Courrier d'huissier",
+    titre: "Courrier d'huissier : que faire quand vous en recevez un ?",
+    description: "Commandement de payer, saisie, assignation : comprendre l'acte, les délais et où trouver de l'aide.",
+    date: "14 mai 2025",
+  },
 ]
 
 export default function Blog() {
@@ -33,7 +49,7 @@ export default function Blog() {
     <>
       <Head>
         <title>Blog Lisible — Guides pratiques sur vos documents administratifs</title>
-        <meta name="description" content="Guides pratiques pour comprendre vos documents administratifs : courriers CAF, bulletins de paie, baux locatifs, contrats de travail." />
+        <meta name="description" content="Guides pratiques pour comprendre vos documents administratifs : courriers CAF, bulletins de paie, baux locatifs, contrats de travail, courriers d'huissier." />
         <link rel="canonical" href="https://lisible.eu/blog" />
       </Head>
 

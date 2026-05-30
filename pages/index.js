@@ -1108,6 +1108,8 @@ export default function Home() {
                   { slug: "trop-percu-caf", emoji: "🏛️", titre: "Trop-perçu CAF : que faire quand vous recevez cette lettre ?", desc: "Ce que ça veut dire, vos options, les erreurs à éviter et où trouver de l'aide gratuitement." },
                   { slug: "bulletin-de-paie", emoji: "💼", titre: "Bulletin de paie : comment le lire et quoi vérifier en 5 minutes", desc: "Les lignes principales expliquées, le ratio brut/net et les questions à poser à vos RH." },
                   { slug: "bail-locatif", emoji: "🏠", titre: "Bail locatif : les clauses à vérifier avant de signer", desc: "Loyer, charges, dépôt de garantie, préavis et clauses abusives." },
+                  { slug: "contrat-de-travail", emoji: "📋", titre: "Contrat de travail : ce qu'il faut vérifier avant de signer", desc: "Période d'essai, salaire, clause de non-concurrence, mobilité et préavis." },
+                  { slug: "courrier-huissier", emoji: "⚖️", titre: "Courrier d'huissier : que faire quand vous en recevez un ?", desc: "Commandement de payer, saisie, assignation : comprendre l'acte et les délais à respecter." },
                 ].map((article) => (
                   <a key={article.slug} href={`/blog/${article.slug}`} className="flex items-start gap-4 bg-white border border-border-soft rounded-2xl p-4 hover:border-terracotta/30 hover:shadow-sm transition-all group">
                     <span className="text-2xl flex-shrink-0">{article.emoji}</span>
