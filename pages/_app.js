@@ -2,12 +2,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import '../styles/globals.css'
 
-const GA_ID = 'G-3ME09W09ZD' 
-
-function gtag(...args) {
-  window.dataLayer = window.dataLayer || []
-  window.dataLayer.push(args)
-}
+const GA_ID = 'G-3ME09W09ZD'
 
 export default function App({ Component, pageProps }) {
   const router = useRouter()
@@ -19,11 +14,12 @@ export default function App({ Component, pageProps }) {
     document.head.appendChild(script1)
 
     window.dataLayer = window.dataLayer || []
-    gtag('js', new Date())
-    gtag('config', GA_ID)
+    window.gtag = function() { window.dataLayer.push(arguments) }
+    window.gtag('js', new Date())
+    window.gtag('config', GA_ID)
 
     const handleRouteChange = (url) => {
-      gtag('config', GA_ID, { page_path: url })
+      window.gtag('config', GA_ID, { page_path: url })
     }
 
     router.events.on('routeChangeComplete', handleRouteChange)
