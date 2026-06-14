@@ -7,8 +7,7 @@ export default function MentionsLegales() {
       <Head>
         <title>Mentions légales — Lisible</title>
         <meta name="description" content="Mentions légales du site Lisible.eu" />
-        <meta name="robots" content="noindex" />
-      </Head>
+             </Head>
       <div className="min-h-screen bg-beige" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <header className="border-b border-border-soft bg-white/80 backdrop-blur-sm sticky top-0 z-10">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
